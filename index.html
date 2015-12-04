@@ -1,0 +1,153 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>SortMatch.ca: Tournament</title>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+        <link href='https://fonts.googleapis.com/css?family=Fugaz+One|Cabin' rel='stylesheet' type='text/css'>
+        <style>
+            body { padding-top: 00px; background: #ccc url("brickwall.png"); font-family: "Cabin", sans-serif; }
+            table { width: 100%; margin-bottom: 20px; }
+            .table { background: #fff; }
+            .table, .unstyled .btn { box-shadow: 0 0.2em 0.4em rgba(0,0,0,0.2); }
+            .table thead th, .table tfoot td { background: #fcfcfc; }
+            h1, h2, td, th, p, footer { text-align: center; }
+            h1, h2 { font-family: "Fugaz One", serif; text-shadow: 0 0.06em 0.12em rgba(0,0,0,0.2); margin-bottom: 0.3em; }
+            td > div { border-radius: 1em; }
+            p { opacity: 0.5; }
+            footer p { margin-bottom: 0.2em; }
+            footer hr { margin: 10px 0; }
+            .progress { margin-bottom: 0; }
+            .btn input { display: none; }
+            .sliding-transition {
+                -webkit-transition: all 1s ease 0s;
+                transition: all 1s ease 0s;
+            }
+            .delayedfade-transition {
+              -webkit-transition: all 1s ease 1s;
+              transition: all 1s ease 1s;
+            }
+            .delayedfade-enter, .delayedfade-leave {
+              opacity: 0;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container theme-showcase" role="main" id="vue-app">
+            <h1 v-if="!matches.length">Tournament</h1>
+            <p v-if="competitors.length < 2">Start by adding at least 2 competitors</p>
+            <div class="row">
+                <div class="col-sm-4" v-bind:class="{ 'col-sm-offset-4': !matches.length, 'sliding-transition': matches.length }">
+                    <h2 v-if="matches.length">Competitors</h2>
+                    <table v-bind:class="{ 'table': competitors.length, 'unstyled': !competitors.length }">
+                        <thead v-if="competitors.length">
+                            <tr>
+                                <th>Name</th>
+                                <th>Matches</th>
+                                <th>Rating</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="competitor in competitors | orderBy 'ranking.getRating()' -1">
+                                <td v-highlight="competitor.name">{{ competitor.name }}</td>
+                                <td v-highlight="competitor.matches.length">{{ competitor.matches.length }}</td>
+                                <td v-highlight="competitor.ranking.getRating()">
+                                    <div class="progress">
+                                        <div class="progress-bar" v-bind:class="{ 'progress-bar-striped': competitor.matched, 'progress-bar-info': competitor.matched, 'active': competitor.matched }" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: {{ competitor.ranking.getRating() / 22 }}%;">
+                                            {{ competitor.ranking.getRating() / 100 | round '1' }}
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td colspan="3">
+                                    <button class="btn btn-success" v-bind:class="{ 'btn-sm': matches.length }" id="competitor-add"><span class="glyphicon glyphicon-plus"></span> Add competitor</button>
+                                </td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                    <p v-if="competitors.length && matches.length && matches.length < competitors.length * 5">Keep going until all competitors have at least 10 matches.</p>
+                    <p v-if="competitors.length && matches.length >= competitors.length * 5 && !paused">When you're satisfied enough matches have taken place, pause matchmaking and finish the remaining matches.</p>
+                    <p v-if="competitors.length && matches.length >= competitors.length * 5 && paused">Finish the remaining matches and declare the victor. Optionally, hold one final match between the top two competitors.</p>
+                </div>
+                <div class="col-sm-8" v-if="matches.length" transition="delayedfade">
+                    <h2 v-if="matches.length">{{ name }}</h2>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Matched</th>
+                                <th>Favored</th>
+                                <th>Challenger</th>
+                                <th>Finished</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="match in matches | orderBy 'start' -1">
+                                <td v-highlight="match.start">{{ match.start.toLocaleTimeString() }}</td>
+                                <td v-bind:class="{ 'danger': match.result === RESULT_UNFAVORED, 'success': match.result === RESULT_FAVORED, 'warning': match.result === RESULT_TIE, 'info': match.result === RESULT_ABANDONED && match.finished }">{{ match.favored.name }}</td>
+                                <td v-bind:class="{ 'danger': match.result === RESULT_FAVORED, 'success': match.result === RESULT_UNFAVORED, 'warning': match.result === RESULT_TIE, 'info': match.result === RESULT_ABANDONED && match.finished }">{{ match.unfavored.name }}</td>
+                                <td v-if="match.finished" v-highlight="match.finished">{{ match.finished.toLocaleTimeString() }}</td>
+                                <td v-else>
+                                    <div class="dropdown">
+                                        <button class="btn btn-success btn-xs dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">Record result <span class="caret"></span></button>
+                                        <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+                                            <li><a href="#" v-on:click="resolveMatch(match, RESULT_FAVORED)">Win for {{ match.favored.name }}</a></li>
+                                            <li><a href="#" v-on:click="resolveMatch(match, RESULT_TIE)">Tie</a></li>
+                                            <li><a href="#" v-on:click="resolveMatch(match, RESULT_UNFAVORED)">Win for {{ match.unfavored.name }}</a></li>
+                                            <li role="separator" class="divider"></li>
+                                            <li><a href="#" v-on:click="resolveMatch(match, RESULT_ABANDONED)">Match did not take place</a></li>
+                                        </ul>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <td colspan="4">
+                                    <div class="btn-group">
+                                        <label class="btn btn-sm btn-primary" v-bind:class="{ 'active': paused }">
+                                            <input type="radio" v-bind:value="true" v-model="paused">
+                                            <span class="glyphicon glyphicon-pause"></span> Pause matchmaking
+                                        </label>
+                                        <label class="btn btn-sm btn-primary" v-bind:class="{ 'active': !paused }">
+                                            <input type="radio" v-bind:value="false" v-model="paused">
+                                            <span class="glyphicon glyphicon-play"></span> Continue matchmaking
+                                        </label>
+                                    </div>
+                                    <button v-on:click="confirmDelete" class="btn btn-sm btn-danger" v-if="paused"><span class="glyphicon glyphicon-remove"></span> Delete tournament</button>
+                                </td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                    <footer class="small">
+                        <p>This tool is provided to help you run tournaments (e.g. hockey, tennis, chess, <a href="http://www.spyparty.com/">SpyParty</a>).</p>
+                        <p>Record results. Ratings are adjusted by how surprising the result of a match is.</p>
+                        <p>When you're done, pause the tournament, finish the remaining matches, then declare the victor.</p>
+                        <hr />
+                        <p>The underlying tournament system is <a href="https://en.wikipedia.org/wiki/Glicko_rating_system">Gicko2</a>, a system similar to <a href="https://en.wikipedia.org/wiki/Elo_rating_system">Elo</a>.</p>
+                        <p>The tournament is saved in your browser's cache.</p>
+                        <p>You can <a href="?First">run</a> <a href="?Second">multiple</a> <a href="?Third">tournaments</a> <a href="?Fourth">simultaneously</a>.</p>
+                    </footer>
+                </div>
+            </div>
+        </div>
+        <script src="http://cdnjs.cloudflare.com/ajax/libs/vue/1.0.10/vue.min.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+        <script src="jquery.color-2.1.2.min.js"></script>
+        <script src="glicko2.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+        <script src="tournament.js"></script>
+        <script>
+            (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+            (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+            m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+            })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+            ga('create', 'UA-6512994-8', 'auto');
+            ga('send', 'pageview');
+        </script>
+    </body>
+</html>
