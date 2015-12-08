@@ -64,7 +64,8 @@
                         <tfoot>
                             <tr>
                                 <td colspan="3">
-                                    <button class="btn btn-success" v-bind:class="{ 'btn-sm': matches.length }" id="competitor-add"><span class="glyphicon glyphicon-plus"></span> Add competitor</button>
+                                    <button class="btn btn-success" v-bind:class="{ 'btn-sm': matches.length }" v-on:click="competitorAdd"><span class="glyphicon glyphicon-plus"></span> Add competitor</button>
+                                    <button class="btn btn-primary" v-if="!competitors.length" v-on:click="startDemo"><span class="glyphicon glyphicon-play"></span> Run demo</button>
                                 </td>
                             </tr>
                         </tfoot>
@@ -130,6 +131,7 @@
                         <p>The underlying tournament system is <a href="https://en.wikipedia.org/wiki/Glicko_rating_system">Gicko2</a>, a system similar to <a href="https://en.wikipedia.org/wiki/Elo_rating_system">Elo</a>.</p>
                         <p>The tournament is saved in your browser's cache.</p>
                         <p>You can <a href="?First">run</a> <a href="?Second">multiple</a> <a href="?Third">tournaments</a> <a href="?Fourth">simultaneously</a>.</p>
+                        <p>You can stream results using services like <a href="http://www.twitch.tv/">Twitch</a>.</p>
                     </footer>
                 </div>
             </div>

@@ -21,29 +21,8 @@ Vue.filter('round', function(value, decimals) {
 });
 
 
-$("#competitor-add").on("click", function() {
-    var name = (prompt("Competitor's name?") || "").trim();
-    if (!name) {
-    } else if (vue.competitors.filter(function(competitor) { return competitor.name == name; }).length !== 0) {
-        console.log("Duplicate name provided.");
-    } else {
-        var initialRating = parseInt(prompt("Competitor's initial rating? (10-20)", "15") * 100) || vue.ranking._default_rating;
-        initialRating = Math.max(1000, Math.min(2000, initialRating));
-        vue.competitors.push({
-            name: name,
-            initialRating: initialRating,
-            ranking: vue.ranking.makePlayer(initialRating, vue.ranking._default_rd, vue.ranking._default_vol),
-            matches: [],
-            matched: false
-        });
-        planMatches();
-        saveToLocalStorage();
-    }
-})
-
-
 var vue_data = {
-    name: location.search.substring(1) || "Matches",
+    name: decodeURIComponent(location.search.substring(1)) || "Matches",
     ranking: new glicko2.Glicko2(),
     started: new Date(),
     pageLoad: new Date(),
@@ -57,10 +36,28 @@ var vue_data = {
 };
 
 
-// Retrieve the saved tournament
-if (localStorage[location.search]) {
+// Save and load
+function saveToLocalStorage() {
+    var replacerCache = [];
+    localStorage[decodeURIComponent(location.search)] = JSON.stringify({
+        started: vue.started,
+        competitors: vue.competitors,
+        matches: vue.matches,
+        paused: vue.paused
+    }, function(key, value) {
+        if (typeof value === 'object' && value !== null) {
+            if (replacerCache.indexOf(value) !== -1) {
+                return "jsonid:"+replacerCache.indexOf(value);
+            }
+            value.jsonid = replacerCache.length;
+            replacerCache.push(value);
+        }
+        return value;
+    });
+}
+if (localStorage[decodeURIComponent(location.search)]) {
     var reviverCache = {};
-    var parsed = JSON.parse(localStorage[location.search], function(k, v) {
+    var parsed = JSON.parse(localStorage[decodeURIComponent(location.search)], function(k, v) {
         if (v === null) {
             return v;
         } else if (typeof v === "object" && v.__rating !== undefined) {
@@ -101,6 +98,9 @@ var vue = new Vue({
     watch: {
         'paused': function (paused) {
             saveToLocalStorage();
+            if (!paused) {
+                planMatches();
+            }
         }
     },
     methods: {
@@ -110,22 +110,71 @@ var vue = new Vue({
             match.favored.matched = false;
             match.unfavored.matched = false;
             regenerateRatings();
-            var unassigned = vue.competitors.filter(function(competitor) {
+            var assigned = vue.competitors.filter(function(competitor) {
                 return competitor.matches.filter(function(match) {
                     return match.finished === null;
-                }).length === 0;
+                }).length !== 0;
             });
-            console.log(unassigned.length);
-            if (unassigned.length === vue.competitors.length) {
+            if (assigned.length <= 1) {
                 planMatches();
             }
             saveToLocalStorage();
         },
         confirmDelete() {
             if (confirm("Your tournament will not be recoverable. Are you sure you're okay with deleting this tournament?")) {
-                delete localStorage[location.search];
+                delete localStorage[decodeURIComponent(location.search)];
                 location.reload();
             }
+        },
+        competitorAdd() {
+            var name = (prompt("Competitor's name?") || "").trim();
+            if (!name) {
+            } else if (vue.competitors.filter(function(competitor) { return competitor.name == name; }).length !== 0) {
+                console.log("Duplicate name provided.");
+            } else {
+                var initialRating = parseInt(prompt("Competitor's initial rating? (10-20)", "15") * 100) || vue.ranking._default_rating;
+                initialRating = Math.max(1000, Math.min(2000, initialRating));
+                vue.competitors.push({
+                    name: name,
+                    initialRating: initialRating,
+                    ranking: vue.ranking.makePlayer(initialRating, vue.ranking._default_rd, vue.ranking._default_vol),
+                    matches: [],
+                    matched: false
+                });
+                planMatches();
+                saveToLocalStorage();
+            }
+        },
+        startDemo() {
+            var competitors = {
+                "Montreal Canadiens": 110,
+                "Tampa Bay Lightning" :108,
+                "Detroit Red Wings": 100,
+                "New York Rangers": 113,
+                "Washington Capitals": 101,
+                "New York Islanders": 101,
+                "Ottawa Senators": 99,
+                "Pittsburgh Penguins": 98,
+                "St. Louis Blues": 109,
+                "Nashville Predators": 104,
+                "Chicago Blackhawks": 102,
+                "Anaheim Ducks": 109,
+                "Vancouver Canucks": 101,
+                "Calgary Flames": 97,
+                "Minnesota Wild": 100,
+                "Winnepeg Jets": 99,
+            };
+            for(var name in competitors) {
+                var initialRating = Math.round(100 * (6 * (competitors[name] - 97) / (113 - 97) + 12));
+                vue.competitors.push({
+                    name: name,
+                    initialRating: initialRating,
+                    ranking: vue.ranking.makePlayer(initialRating, vue.ranking._default_rd, vue.ranking._default_vol),
+                    matches: [],
+                    matched: false
+                });
+            }
+            planMatches();
         }
     }
 });
@@ -173,10 +222,26 @@ function regenerateRatings() {
 }
 
 
+var planMatchesTimeout = null;
 function planMatches() {
+
+    // Just bail if we're paused
     if (vue.paused) {
         return;
     }
+
+    // Decide when to next call planMatches
+    clearTimeout(planMatchesTimeout);
+    var durations = vue.matches.map(function(match) { return (match.finished ? match.finished : new Date()) - match.start });
+    if (durations.length) {
+        var sum = durations.reduce(function(a, b) { return a + b; });
+        var avg = sum / durations.length;
+        planMatchesTimeout = setTimeout(planMatches, Math.max(30, Math.pow(avg / 1000, 0.75)) * 1000);
+    } else {
+        planMatchesTimeout = setTimeout(planMatches, 30 * 1000);
+    }
+
+    // Pair up available competitors
     var considered = [];
     while (true) {
         var unassigned = vue.competitors.filter(function(competitor) {
@@ -224,45 +289,8 @@ function planMatches() {
 }
 
 
-/* Plan matches immediately upon load and every 60 seconds thereafter. Note that
- * matches will be planned immediately if all matches have been completed. */
-setInterval(planMatches, 60 * 1000);
+// Plan matches immediately upon page load
 planMatches();
 
 
-function saveToLocalStorage() {
-    var replacerCache = [];
-    localStorage[location.search] = JSON.stringify({
-        started: vue.started,
-        competitors: vue.competitors,
-        matches: vue.matches,
-        paused: vue.paused
-    }, function(key, value) {
-        if (typeof value === 'object' && value !== null) {
-            if (replacerCache.indexOf(value) !== -1) {
-                return "jsonid:"+replacerCache.indexOf(value);
-            }
-            value.jsonid = replacerCache.length;
-            replacerCache.push(value);
-        }
-        return value;
-    });
-}
-
-
 $("#competitor-add").focus();
-
-
-function debugInit() {
-    ["A", "B", "C", "D", "E", "F", "G", "H", "I"].forEach(function(name, index) {
-        var initialRating = (20 - index) * 100;
-        vue.competitors.push({
-            name: "Debug:" + name,
-            initialRating: initialRating,
-            ranking: vue.ranking.makePlayer(initialRating, vue.ranking._default_rd, vue.ranking._default_vol),
-            matches: [],
-            matched: false
-        });
-    });
-    planMatches();
-}
