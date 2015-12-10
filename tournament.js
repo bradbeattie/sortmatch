@@ -2,6 +2,7 @@ var RESULT_FAVORED = 1;
 var RESULT_TIE = 0.5;
 var RESULT_UNFAVORED = 0;
 var RESULT_ABANDONED = null;
+var URI_KEY = decodeURIComponent(location.search.substring(1));
 
 
 Vue.directive('highlight', function() {
@@ -22,7 +23,7 @@ Vue.filter('round', function(value, decimals) {
 
 
 var vue_data = {
-    name: decodeURIComponent(location.search.substring(1)) || "Matches",
+    name: URI_KEY || "Matches",
     ranking: new glicko2.Glicko2(),
     started: new Date(),
     pageLoad: new Date(),
@@ -37,9 +38,9 @@ var vue_data = {
 
 
 // Save and load
-function saveToLocalStorage() {
+function tournamentSave() {
     var replacerCache = [];
-    localStorage[decodeURIComponent(location.search)] = JSON.stringify({
+    localStorage[URI_KEY] = JSON.stringify({
         started: vue.started,
         competitors: vue.competitors,
         matches: vue.matches,
@@ -55,9 +56,9 @@ function saveToLocalStorage() {
         return value;
     });
 }
-if (localStorage[decodeURIComponent(location.search)]) {
+function tournamentLoad() {
     var reviverCache = {};
-    var parsed = JSON.parse(localStorage[decodeURIComponent(location.search)], function(k, v) {
+    var parsed = JSON.parse(localStorage[URI_KEY], function(k, v) {
         if (v === null) {
             return v;
         } else if (typeof v === "object" && v.__rating !== undefined) {
@@ -90,6 +91,13 @@ if (localStorage[decodeURIComponent(location.search)]) {
     }
     reviverCache = null;
 }
+function tournamentImport() {
+}
+function tournamentExport() {
+}
+if (localStorage[URI_KEY]) {
+    tournamentLoad();
+}
 
 
 var vue = new Vue({
@@ -104,7 +112,7 @@ var vue = new Vue({
         }
     },
     methods: {
-        resolveMatch(match, result) {
+        matchResolve(match, result) {
             match.result = result;
             match.finished = new Date();
             match.favored.matched = false;
@@ -120,9 +128,9 @@ var vue = new Vue({
             }
             saveToLocalStorage();
         },
-        confirmDelete() {
+        tournamentDelete() {
             if (confirm("Your tournament will not be recoverable. Are you sure you're okay with deleting this tournament?")) {
-                delete localStorage[decodeURIComponent(location.search)];
+                delete localStorage[URI_KEY];
                 location.reload();
             }
         },
@@ -145,7 +153,7 @@ var vue = new Vue({
                 saveToLocalStorage();
             }
         },
-        startDemo() {
+        tournamentDemo() {
             var competitors = {
                 "Montreal Canadiens": 110,
                 "Tampa Bay Lightning" :108,

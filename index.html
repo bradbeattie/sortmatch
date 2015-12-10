@@ -65,7 +65,7 @@
                             <tr>
                                 <td colspan="3">
                                     <button class="btn btn-success" v-bind:class="{ 'btn-sm': matches.length }" v-on:click="competitorAdd"><span class="glyphicon glyphicon-plus"></span> Add competitor</button>
-                                    <button class="btn btn-primary" v-if="!competitors.length" v-on:click="startDemo"><span class="glyphicon glyphicon-play"></span> Run demo</button>
+                                    <button class="btn btn-primary" v-if="!competitors.length" v-on:click="tournamentDemo"><span class="glyphicon glyphicon-play"></span> Run demo</button>
                                 </td>
                             </tr>
                         </tfoot>
@@ -95,11 +95,11 @@
                                     <div class="dropdown">
                                         <button class="btn btn-success btn-xs dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">Record result <span class="caret"></span></button>
                                         <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
-                                            <li><a href="#" v-on:click="resolveMatch(match, RESULT_FAVORED)">Win for {{ match.favored.name }}</a></li>
-                                            <li><a href="#" v-on:click="resolveMatch(match, RESULT_TIE)">Tie</a></li>
-                                            <li><a href="#" v-on:click="resolveMatch(match, RESULT_UNFAVORED)">Win for {{ match.unfavored.name }}</a></li>
+                                            <li><a href="#" v-on:click="matchResolve(match, RESULT_FAVORED)">Win for {{ match.favored.name }}</a></li>
+                                            <li><a href="#" v-on:click="matchResolve(match, RESULT_TIE)">Tie</a></li>
+                                            <li><a href="#" v-on:click="matchResolve(match, RESULT_UNFAVORED)">Win for {{ match.unfavored.name }}</a></li>
                                             <li role="separator" class="divider"></li>
-                                            <li><a href="#" v-on:click="resolveMatch(match, RESULT_ABANDONED)">Match did not take place</a></li>
+                                            <li><a href="#" v-on:click="matchResolve(match, RESULT_ABANDONED)">Match did not take place</a></li>
                                         </ul>
                                     </div>
                                 </td>
@@ -118,7 +118,7 @@
                                             <span class="glyphicon glyphicon-play"></span> Continue matchmaking
                                         </label>
                                     </div>
-                                    <button v-on:click="confirmDelete" class="btn btn-sm btn-danger" v-if="paused"><span class="glyphicon glyphicon-remove"></span> Delete tournament</button>
+                                    <button v-on:click="tournamentDelete" class="btn btn-sm btn-danger" v-if="paused"><span class="glyphicon glyphicon-remove"></span> Delete tournament</button>
                                 </td>
                             </tr>
                         </tfoot>
