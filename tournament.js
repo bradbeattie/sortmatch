@@ -10,6 +10,13 @@ Vue.directive('highlight', function() {
 });
 
 
+Vue.filter('finished', function(matches, finished) {
+    return matches.filter(function(match, index) {
+        return match.finished && finished || !match.finished && !finished;
+    });
+})
+
+
 Vue.filter('round', function(value, decimals) {
     if (!value) {
         value = 0;
@@ -23,11 +30,12 @@ Vue.filter('round', function(value, decimals) {
 
 
 var vue_data = {
-    name: URI_KEY || "Matches",
+    name: URI_KEY,
     ranking: new glicko2.Glicko2(),
     started: new Date(),
     pageLoad: new Date(),
     competitors: [],
+    countdown: 0,
     matches: [],
     paused: false,
     RESULT_FAVORED: RESULT_FAVORED,
@@ -105,7 +113,7 @@ var vue = new Vue({
     data: vue_data,
     watch: {
         'paused': function (paused) {
-            saveToLocalStorage();
+            tournamentSave();
             if (!paused) {
                 planMatches();
             }
@@ -126,7 +134,7 @@ var vue = new Vue({
             if (assigned.length <= 1) {
                 planMatches();
             }
-            saveToLocalStorage();
+            tournamentSave();
         },
         tournamentDelete() {
             if (confirm("Your tournament will not be recoverable. Are you sure you're okay with deleting this tournament?")) {
@@ -244,10 +252,12 @@ function planMatches() {
     if (durations.length) {
         var sum = durations.reduce(function(a, b) { return a + b; });
         var avg = sum / durations.length;
-        planMatchesTimeout = setTimeout(planMatches, Math.max(30, Math.pow(avg / 1000, 0.75)) * 1000);
+        var delay = Math.max(30, Math.pow(avg / 1000, 0.75));
     } else {
-        planMatchesTimeout = setTimeout(planMatches, 30 * 1000);
+        var delay = 30;
     }
+    vue.countdown = parseInt(delay);
+    planMatchesTimeout = setTimeout(planMatches, delay * 1000);
 
     // Pair up available competitors
     var considered = [];
@@ -301,4 +311,17 @@ function planMatches() {
 planMatches();
 
 
+// Decrement the vue countdown every second (is there a better way to implement a vue.js-compatible timer?)
+setInterval(function() {
+    vue.countdown = Math.max(0, vue.countdown - 1);
+}, 1000);
+
+
+// Start the page focused on the competitor add button
 $("#competitor-add").focus();
+
+
+// Prevent "#" links from changing the url hash
+$(document).on("click", "a[href=#]", function(event) {
+    event.preventDefault();
+});

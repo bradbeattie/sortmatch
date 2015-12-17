@@ -18,6 +18,7 @@
             p { opacity: 0.5; }
             footer p { margin-bottom: 0.2em; }
             footer hr { margin: 10px 0; }
+            #countdown { font-family: monospace; }
             .progress { margin-bottom: 0; }
             .btn input { display: none; }
             .sliding-transition {
@@ -75,7 +76,7 @@
                     <p v-if="competitors.length && matches.length >= competitors.length * 5 && paused">Finish the remaining matches and declare the victor. Optionally, hold one final match between the top two competitors.</p>
                 </div>
                 <div class="col-sm-8" v-if="matches.length" transition="delayedfade">
-                    <h2 v-if="matches.length">{{ name }}</h2>
+                    <h2 v-if="matches.length">{{ name || "Pending Matches" }}</h2>
                     <table class="table">
                         <thead>
                             <tr>
@@ -86,12 +87,11 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr v-for="match in matches | orderBy 'start' -1">
+                            <tr v-for="match in matches | finished false | orderBy 'start' -1">
                                 <td v-highlight="match.start">{{ match.start.toLocaleTimeString() }}</td>
-                                <td v-bind:class="{ 'danger': match.result === RESULT_UNFAVORED, 'success': match.result === RESULT_FAVORED, 'warning': match.result === RESULT_TIE, 'info': match.result === RESULT_ABANDONED && match.finished }">{{ match.favored.name }}</td>
-                                <td v-bind:class="{ 'danger': match.result === RESULT_FAVORED, 'success': match.result === RESULT_UNFAVORED, 'warning': match.result === RESULT_TIE, 'info': match.result === RESULT_ABANDONED && match.finished }">{{ match.unfavored.name }}</td>
-                                <td v-if="match.finished" v-highlight="match.finished">{{ match.finished.toLocaleTimeString() }}</td>
-                                <td v-else>
+                                <td>{{ match.favored.name }}</td>
+                                <td>{{ match.unfavored.name }}</td>
+                                <td>
                                     <div class="dropdown">
                                         <button class="btn btn-success btn-xs dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">Record result <span class="caret"></span></button>
                                         <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
@@ -106,7 +106,7 @@
                             </tr>
                         </tbody>
                         <tfoot>
-                            <tr>
+                            <tr class="info">
                                 <td colspan="4">
                                     <div class="btn-group">
                                         <label class="btn btn-sm btn-primary" v-bind:class="{ 'active': paused }">
@@ -115,13 +115,37 @@
                                         </label>
                                         <label class="btn btn-sm btn-primary" v-bind:class="{ 'active': !paused }">
                                             <input type="radio" v-bind:value="false" v-model="paused">
-                                            <span class="glyphicon glyphicon-play"></span> Continue matchmaking
+                                            <span v-if="paused">
+                                                <span class="glyphicon glyphicon-play"></span> Continue matchmaking
+                                            </span>
+                                            <span v-else>
+                                                <span class="glyphicon glyphicon-play"></span> Next matchmaking: <span id="countdown">{{ countdown }}s</span>
+                                            </span>
                                         </label>
                                     </div>
                                     <button v-on:click="tournamentDelete" class="btn btn-sm btn-danger" v-if="paused"><span class="glyphicon glyphicon-remove"></span> Delete tournament</button>
                                 </td>
                             </tr>
                         </tfoot>
+                    </table>
+                    <h2>Completed Matches</h2>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Matched</th>
+                                <th>Favored</th>
+                                <th>Challenger</th>
+                                <th>Finished</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="match in matches | finished true | orderBy 'start' -1">
+                                <td v-highlight="match.start">{{ match.start.toLocaleTimeString() }}</td>
+                                <td v-bind:class="{ 'danger': match.result === RESULT_UNFAVORED, 'success': match.result === RESULT_FAVORED, 'warning': match.result === RESULT_TIE, 'info': match.result === RESULT_ABANDONED }">{{ match.favored.name }}</td>
+                                <td v-bind:class="{ 'danger': match.result === RESULT_FAVORED, 'success': match.result === RESULT_UNFAVORED, 'warning': match.result === RESULT_TIE, 'info': match.result === RESULT_ABANDONED }">{{ match.unfavored.name }}</td>
+                                <td v-highlight="match.finished">{{ match.finished.toLocaleTimeString() }}</td>
+                            </tr>
+                        </tbody>
                     </table>
                     <footer class="small">
                         <p>This tool is provided to help you run tournaments (e.g. hockey, tennis, chess, <a href="http://www.spyparty.com/">SpyParty</a>).</p>
@@ -131,7 +155,7 @@
                         <p>The underlying tournament system is <a href="https://en.wikipedia.org/wiki/Glicko_rating_system">Gicko2</a>, a system similar to <a href="https://en.wikipedia.org/wiki/Elo_rating_system">Elo</a>.</p>
                         <p>The tournament is saved in your browser's cache.</p>
                         <p>You can <a href="?First">run</a> <a href="?Second">multiple</a> <a href="?Third">tournaments</a> <a href="?Fourth">simultaneously</a>.</p>
-                        <p>You can stream results using services like <a href="http://www.twitch.tv/">Twitch</a>.</p>
+                        <p>You can stream results and facilitate conversations using services like <a href="http://www.twitch.tv/">Twitch</a>.</p>
                     </footer>
                 </div>
             </div>
