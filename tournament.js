@@ -69,14 +69,9 @@ var vue_data = {
 
 
 // Save and load
-function tournamentSave() {
+function objectToJSON(obj) {
     var replacerCache = [];
-    localStorage[URI_KEY] = JSON.stringify({
-        started: vue.started,
-        competitors: vue.competitors,
-        matches: vue.matches,
-        paused: vue.paused
-    }, function(key, value) {
+    return JSON.stringify(obj, function(key, value) {
         if (typeof value === 'object' && value !== null) {
             if (replacerCache.indexOf(value) !== -1) {
                 return "jsonid:"+replacerCache.indexOf(value);
@@ -87,9 +82,9 @@ function tournamentSave() {
         return value;
     });
 }
-function tournamentLoad() {
+function jsonToObject(json) {
     var reviverCache = {};
-    var parsed = JSON.parse(localStorage[URI_KEY], function(k, v) {
+    var parsed = JSON.parse(json, function(k, v) {
         if (v === null) {
             return v;
         } else if (typeof v === "object" && v.__rating !== undefined) {
@@ -116,18 +111,43 @@ function tournamentLoad() {
             }
         }
         revive(parsed);
-        for (var k in parsed) {
-            vue_data[k] = parsed[k];
-        }
+        return parsed;
     }
-    reviverCache = null;
 }
-function tournamentImport() {
+
+function tournamentSave(obj) {
+    localStorage[URI_KEY] = objectToJSON({
+        started: vue.started,
+        competitors: vue.competitors,
+        matches: vue.matches,
+        paused: vue.paused
+    });
 }
-function tournamentExport() {
+function tournamentLoad() {
+    parsed = jsonToObject(localStorage[URI_KEY]);
+    for (var k in parsed) {
+        vue_data[k] = parsed[k];
+    }
 }
 if (localStorage[URI_KEY]) {
     tournamentLoad();
+}
+
+function tournamentExport() {
+    tournamentSave();
+    parsed = jsonToObject(localStorage[URI_KEY]);
+    parsed.competitors.forEach(function(competitor, index) {
+        delete competitor.ranking;
+    });
+    saveAs(
+        new Blob(
+            [objectToJSON(parsed)],
+            {type: "application/json;charset=utf-8"}
+        ),
+        URI_KEY + " (" + (new Date()).toISOString().split(".")[0].replace(/[^0-9]/g, "-") + ").json"
+    );
+}
+function tournamentImport() {
 }
 
 
@@ -169,6 +189,9 @@ var vue = new Vue({
             if (name) {
                 location.href = "/?" + encodeURIComponent(name);
             }
+        },
+        tournamentExport() {
+            tournamentExport();
         },
         tournamentDelete() {
             if (confirm("Your tournament will not be recoverable. Are you sure you're okay with deleting this tournament?")) {
