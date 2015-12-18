@@ -155,7 +155,18 @@ var vue = new Vue({
             }
         },
         tournamentExport() {
-            tournamentExport();
+            tournamentSave();
+            parsed = jsonToObject(localStorage[URI_KEY]);
+            parsed.competitors.forEach(function(competitor, index) {
+                delete competitor.ranking;
+            });
+            saveAs(
+                new Blob(
+                    [objectToJSON(parsed)],
+                    {type: "application/json;charset=utf-8"}
+                ),
+                URI_KEY + " (" + (new Date()).toISOString().split(".")[0].replace(/[^0-9]/g, "-") + ").json"
+            );
         },
         tournamentDelete() {
             if (confirm("Your tournament will not be recoverable. Are you sure you're okay with deleting this tournament?")) {
@@ -181,40 +192,10 @@ var vue = new Vue({
                 planMatches();
                 tournamentSave();
             }
-        },
-        tournamentDemo() {
-            var competitors = {
-                "Montreal Canadiens": 110,
-                "Tampa Bay Lightning" :108,
-                "Detroit Red Wings": 100,
-                "New York Rangers": 113,
-                "Washington Capitals": 101,
-                "New York Islanders": 101,
-                "Ottawa Senators": 99,
-                "Pittsburgh Penguins": 98,
-                "St. Louis Blues": 109,
-                "Nashville Predators": 104,
-                "Chicago Blackhawks": 102,
-                "Anaheim Ducks": 109,
-                "Vancouver Canucks": 101,
-                "Calgary Flames": 97,
-                "Minnesota Wild": 100,
-                "Winnepeg Jets": 99,
-            };
-            for(var name in competitors) {
-                var initialRating = Math.round(100 * (6 * (competitors[name] - 97) / (113 - 97) + 12));
-                vue.competitors.push({
-                    name: name,
-                    initialRating: initialRating,
-                    ranking: vue.ranking.makePlayer(initialRating, vue.ranking._default_rd, vue.ranking._default_vol),
-                    matches: [],
-                    matched: false
-                });
-            }
-            planMatches();
         }
     }
 });
+
 
 function tournamentSave(obj) {
     localStorage[URI_KEY] = objectToJSON({
@@ -234,24 +215,6 @@ function tournamentLoad() {
 if (localStorage[URI_KEY]) {
     tournamentLoad();
 }
-
-function tournamentExport() {
-    tournamentSave();
-    parsed = jsonToObject(localStorage[URI_KEY]);
-    parsed.competitors.forEach(function(competitor, index) {
-        delete competitor.ranking;
-    });
-    saveAs(
-        new Blob(
-            [objectToJSON(parsed)],
-            {type: "application/json;charset=utf-8"}
-        ),
-        URI_KEY + " (" + (new Date()).toISOString().split(".")[0].replace(/[^0-9]/g, "-") + ").json"
-    );
-}
-function tournamentImport() {
-}
-
 
 
 function suitability(considering, competitor) {
@@ -387,7 +350,35 @@ $(document).on("click", "a[href=#]", function(event) {
 
 // If the tournament is named "Example Tournament", run the demo
 if (vue.name == "Example Tournament" && !vue.competitors.length) {
-    vue.tournamentDemo();
+    var competitors = {
+        "Montreal Canadiens": 110,
+        "Tampa Bay Lightning" :108,
+        "Detroit Red Wings": 100,
+        "New York Rangers": 113,
+        "Washington Capitals": 101,
+        "New York Islanders": 101,
+        "Ottawa Senators": 99,
+        "Pittsburgh Penguins": 98,
+        "St. Louis Blues": 109,
+        "Nashville Predators": 104,
+        "Chicago Blackhawks": 102,
+        "Anaheim Ducks": 109,
+        "Vancouver Canucks": 101,
+        "Calgary Flames": 97,
+        "Minnesota Wild": 100,
+        "Winnepeg Jets": 99,
+    };
+    for(var name in competitors) {
+        var initialRating = Math.round(100 * (6 * (competitors[name] - 97) / (113 - 97) + 12));
+        vue.competitors.push({
+            name: name,
+            initialRating: initialRating,
+            ranking: vue.ranking.makePlayer(initialRating, vue.ranking._default_rd, vue.ranking._default_vol),
+            matches: [],
+            matched: false
+        });
+    }
+    planMatches();
 }
 
 
