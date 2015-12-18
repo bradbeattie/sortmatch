@@ -29,7 +29,16 @@ Vue.filter('round', function(value, decimals) {
 });
 
 
+var tournamentNames = ["Example Tournament"];
+for (var key in localStorage){
+    if (tournamentNames.indexOf(key) === -1) {
+        tournamentNames.push(key);
+    }
+}
+
+
 var vue_data = {
+    tournamentNames: tournamentNames,
     name: URI_KEY,
     ranking: new glicko2.Glicko2(),
     started: new Date(),
@@ -136,10 +145,16 @@ var vue = new Vue({
             }
             tournamentSave();
         },
+        tournamentAdd() {
+            var name = (prompt("Tournament title?") || "").trim();
+            if (name) {
+                location.href = "/?" + encodeURIComponent(name);
+            }
+        },
         tournamentDelete() {
             if (confirm("Your tournament will not be recoverable. Are you sure you're okay with deleting this tournament?")) {
                 delete localStorage[URI_KEY];
-                location.reload();
+                location.href = "/";
             }
         },
         competitorAdd() {
@@ -158,7 +173,7 @@ var vue = new Vue({
                     matched: false
                 });
                 planMatches();
-                saveToLocalStorage();
+                tournamentSave();
             }
         },
         tournamentDemo() {
@@ -325,3 +340,8 @@ $("#competitor-add").focus();
 $(document).on("click", "a[href=#]", function(event) {
     event.preventDefault();
 });
+
+
+if (vue.name == "Example Tournament" && !vue.competitors.length) {
+    vue.tournamentDemo();
+}
