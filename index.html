@@ -54,7 +54,7 @@
                             <tbody>
                                 <tr v-for="competitor in competitors | orderBy 'ranking.getRating()' -1">
                                     <td v-highlight="competitor.name">{{ competitor.name }}</td>
-                                    <td v-highlight="competitor.matches.length">{{ competitor.matches.length }}</td>
+                                    <td v-highlight="competitor.matches.length">{{ competitor | matchesCompleted }}</td>
                                     <td v-highlight="competitor.ranking.getRating()">
                                         <div class="progress">
                                             <div class="progress-bar" v-bind:class="{ 'progress-bar-striped': competitor.matched, 'progress-bar-info': competitor.matched, 'active': competitor.matched }" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: {{ competitor.ranking.getRating() / 22 }}%;">
@@ -88,14 +88,14 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr v-for="match in matches | finished false | orderBy 'start' -1">
+                                <tr v-for="match in matches | finished false | favoredOrder">
                                     <td v-highlight="match.start">{{ match.start.toLocaleTimeString() }}</td>
                                     <td>{{ match.favored.name }}</td>
                                     <td>{{ match.unfavored.name }}</td>
                                     <td>
                                         <div class="dropdown">
                                             <button class="btn btn-success btn-xs dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">Record result <span class="caret"></span></button>
-                                            <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+                                            <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenu1">
                                                 <li><a href="#" v-on:click="matchResolve(match, RESULT_FAVORED)">Win for {{ match.favored.name }}</a></li>
                                                 <li><a href="#" v-on:click="matchResolve(match, RESULT_TIE)">Tie</a></li>
                                                 <li><a href="#" v-on:click="matchResolve(match, RESULT_UNFAVORED)">Win for {{ match.unfavored.name }}</a></li>
@@ -140,11 +140,11 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr v-for="match in matches | finished true | orderBy 'start' -1">
+                                <tr v-for="match in matches | finished true | orderBy 'finished' -1">
                                     <td v-highlight="match.start">{{ match.start.toLocaleTimeString() }}</td>
                                     <td v-bind:class="{ 'danger': match.result === RESULT_UNFAVORED, 'success': match.result === RESULT_FAVORED, 'warning': match.result === RESULT_TIE, 'info': match.result === RESULT_ABANDONED }">{{ match.favored.name }}</td>
                                     <td v-bind:class="{ 'danger': match.result === RESULT_FAVORED, 'success': match.result === RESULT_UNFAVORED, 'warning': match.result === RESULT_TIE, 'info': match.result === RESULT_ABANDONED }">{{ match.unfavored.name }}</td>
-                                    <td v-highlight="match.finished">{{ match.finished.toLocaleTimeString() }}</td>
+                                    <td v-highlight="match.finished" v-on:dblclick="matchRevert(match)">{{ match.finished.toLocaleTimeString() }}</td>
                                 </tr>
                             </tbody>
                         </table>

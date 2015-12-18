@@ -17,6 +17,20 @@ Vue.filter('finished', function(matches, finished) {
 })
 
 
+Vue.filter('matchesCompleted', function(competitor) {
+    return competitor.matches.filter(function(match, index) {
+        return match.finished && match.result !== RESULT_ABANDONED;
+    }).length;
+})
+
+
+Vue.filter('favoredOrder', function(matches) {
+    return matches.sort(function(a, b) {
+        return b.favored.ranking.getRating() - a.favored.ranking.getRating();
+    });
+})
+
+
 Vue.filter('round', function(value, decimals) {
     if (!value) {
         value = 0;
@@ -145,6 +159,11 @@ var vue = new Vue({
             }
             tournamentSave();
         },
+        matchRevert(match) {
+            match.result = null;
+            match.finished = null;
+            regenerateRatings();
+        },
         tournamentAdd() {
             var name = (prompt("Tournament title?") || "").trim();
             if (name) {
@@ -267,7 +286,7 @@ function planMatches() {
     if (durations.length) {
         var sum = durations.reduce(function(a, b) { return a + b; });
         var avg = sum / durations.length;
-        var delay = Math.max(30, Math.pow(avg / 1000, 0.75));
+        var delay = 30 + Math.pow(avg / 60000, 0.5) * 60;
     } else {
         var delay = 30;
     }
