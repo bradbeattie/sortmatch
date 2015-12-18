@@ -14,9 +14,11 @@
             .unstyled .btn { margin-top: 2px; margin-bottom: 2px; }
             .table thead th, .table tfoot td { background: #fcfcfc; }
             h1, h2, td, th, p, footer, .unstyled { text-align: center; }
-            h1, h2 { font-family: "Fugaz One", serif; text-shadow: 0 0.06em 0.12em rgba(0,0,0,0.2); margin-bottom: 0.3em; }
+            h1, h2, h3 { font-family: "Fugaz One", serif; text-shadow: 0 0.06em 0.12em rgba(0,0,0,0.2); margin-bottom: 0.3em; }
             td > div { border-radius: 1em; }
-            footer p { margin-bottom: 0.2em; opacity: 0.5; }
+            input[type=file] { display: inline-block; }
+            footer { opacity: 0.5; }
+            footer p { margin-bottom: 0.2em; }
             footer hr { margin: 10px 0; }
             #countdown { font-family: monospace; }
             .progress { margin-bottom: 0; }
@@ -94,8 +96,8 @@
                                     <td>{{ match.unfavored.name }}</td>
                                     <td>
                                         <div class="dropdown">
-                                            <button class="btn btn-success btn-xs dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">Record result <span class="caret"></span></button>
-                                            <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenu1">
+                                            <button class="btn btn-success btn-xs dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">Record result <span class="caret"></span></button>
+                                            <ul class="dropdown-menu dropdown-menu-right">
                                                 <li><a href="#" v-on:click="matchResolve(match, RESULT_FAVORED)">Win for {{ match.favored.name }}</a></li>
                                                 <li><a href="#" v-on:click="matchResolve(match, RESULT_TIE)">Tie</a></li>
                                                 <li><a href="#" v-on:click="matchResolve(match, RESULT_UNFAVORED)">Win for {{ match.unfavored.name }}</a></li>
@@ -124,8 +126,14 @@
                                                 </span>
                                             </label>
                                         </div>
-                                        <button v-on:click="tournamentExport" class="btn btn-sm btn-default" v-if="!paused"><span class="glyphicon glyphicon-download-alt"></span> Export tournament</button>
-                                        <button v-on:click="tournamentDelete" class="btn btn-sm btn-danger" v-if="paused"><span class="glyphicon glyphicon-remove"></span> Delete tournament</button>
+                                        <span class="dropdown">
+                                            <button class="btn btn-default btn-sm dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true"><span class="glyphicon glyphicon-cog"></span> <span class="caret"></span></button>
+                                            <ul class="dropdown-menu dropdown-menu-right">
+                                                <li><a href="#" v-on:click="tournamentExport">Export tournament</a>
+                                                <li role="separator" class="divider"></li>
+                                                <li><a href="#" v-on:click="tournamentDelete">Delete tournament</a>
+                                            </ul>
+                                        </span>
                                     </td>
                                 </tr>
                             </tfoot>
@@ -162,14 +170,15 @@
                     </div>
                 </div>
             </div>
-            <div v-else class="row" v-cloak>
-                <div class="col-sm-12 unstyled">
-                    <h2>Tournaments</h2>
-                    <span v-for="tournamentName in tournamentNames">
-                        <a href="?{{ tournamentName }}" class="btn" v-bind:class="{ 'btn-primary': tournamentName == 'Example Tournament', 'btn-info': tournamentName != 'Example Tournament' }"><span class="glyphicon glyphicon-play"></span> {{ tournamentName }}</a>
-                    </span>
-                    <button class="btn btn-success" v-on:click="tournamentAdd"><span class="glyphicon glyphicon-plus"></span> Start a new tournament</button>
-                </div>
+            <div v-else class="unstyled" v-cloak>
+                <h2>Tournaments</h2>
+                <span v-for="tournamentName in tournamentNames">
+                    <a href="?{{ tournamentName }}" class="btn" v-bind:class="{ 'btn-primary': tournamentName == 'Example Tournament', 'btn-info': tournamentName != 'Example Tournament' }"><span class="glyphicon glyphicon-play"></span> {{ tournamentName }}</a>
+                </span>
+                <button class="btn btn-success" v-on:click="tournamentAdd"><span class="glyphicon glyphicon-plus"></span> Start a new tournament</button>
+                <hr />
+                <h3>Import a downloaded tournament</h3>
+                <input type="file" id="files" name="files[]" multiple class="btn btn-success btn-sm" />
             </div>
         </div>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/1.0.10/vue.min.js"></script>

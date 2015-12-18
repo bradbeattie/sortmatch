@@ -115,42 +115,6 @@ function jsonToObject(json) {
     }
 }
 
-function tournamentSave(obj) {
-    localStorage[URI_KEY] = objectToJSON({
-        started: vue.started,
-        competitors: vue.competitors,
-        matches: vue.matches,
-        paused: vue.paused
-    });
-}
-function tournamentLoad() {
-    parsed = jsonToObject(localStorage[URI_KEY]);
-    for (var k in parsed) {
-        vue_data[k] = parsed[k];
-    }
-}
-if (localStorage[URI_KEY]) {
-    tournamentLoad();
-}
-
-function tournamentExport() {
-    tournamentSave();
-    parsed = jsonToObject(localStorage[URI_KEY]);
-    parsed.competitors.forEach(function(competitor, index) {
-        delete competitor.ranking;
-    });
-    saveAs(
-        new Blob(
-            [objectToJSON(parsed)],
-            {type: "application/json;charset=utf-8"}
-        ),
-        URI_KEY + " (" + (new Date()).toISOString().split(".")[0].replace(/[^0-9]/g, "-") + ").json"
-    );
-}
-function tournamentImport() {
-}
-
-
 var vue = new Vue({
     el: '#vue-app',
     data: vue_data,
@@ -251,6 +215,43 @@ var vue = new Vue({
         }
     }
 });
+
+function tournamentSave(obj) {
+    localStorage[URI_KEY] = objectToJSON({
+        started: vue.started,
+        competitors: vue.competitors,
+        matches: vue.matches,
+        paused: vue.paused
+    });
+}
+function tournamentLoad() {
+    parsed = jsonToObject(localStorage[URI_KEY]);
+    for (var k in parsed) {
+        vue_data[k] = parsed[k];
+    }
+    regenerateRatings();
+}
+if (localStorage[URI_KEY]) {
+    tournamentLoad();
+}
+
+function tournamentExport() {
+    tournamentSave();
+    parsed = jsonToObject(localStorage[URI_KEY]);
+    parsed.competitors.forEach(function(competitor, index) {
+        delete competitor.ranking;
+    });
+    saveAs(
+        new Blob(
+            [objectToJSON(parsed)],
+            {type: "application/json;charset=utf-8"}
+        ),
+        URI_KEY + " (" + (new Date()).toISOString().split(".")[0].replace(/[^0-9]/g, "-") + ").json"
+    );
+}
+function tournamentImport() {
+}
+
 
 
 function suitability(considering, competitor) {
@@ -384,6 +385,31 @@ $(document).on("click", "a[href=#]", function(event) {
 });
 
 
+// If the tournament is named "Example Tournament", run the demo
 if (vue.name == "Example Tournament" && !vue.competitors.length) {
     vue.tournamentDemo();
 }
+
+
+// Handle file uploads
+function handleFileSelect(evt) {
+    var files = evt.target.files;
+    for (var i=0, f; f=files[i]; i++) {
+        var reader = new FileReader();
+        reader.onload = (function(theFile) {
+            return function(e) {
+                var name = (prompt("Under what name should "+theFile.name+" be saved?", theFile.name.split(" (2")[0]) || "").trim();
+                if (name) {
+                    localStorage[name] = e.target.result;
+                    if (vue.tournamentNames.indexOf(name) === -1) {
+                        vue.tournamentNames.push(name);
+                    }
+                }
+            };
+        })(f);
+
+        // Read in the image file as a data URL.
+        reader.readAsText(f);
+    }
+}
+$("#files").on("change", handleFileSelect);
