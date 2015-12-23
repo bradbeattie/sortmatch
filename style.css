@@ -1,0 +1,31 @@
+body { background: #ddd; font-family: "Cabin", sans-serif; margin-bottom: 20px; }
+table { width: 100%; margin-bottom: 20px; }
+.table { background: #fff; }
+.table, .unstyled .btn, #logo { box-shadow: 0 0.2em 0.4em rgba(0,0,0,0.1); }
+.unstyled .btn { margin-top: 2px; margin-bottom: 2px; }
+.table thead th, .table tfoot td { background: #fcfcfc; }
+a { color: black; }
+h1, h2, td, th, p, footer, .unstyled { text-align: center; }
+h1, h2, h3 { font-family: "Lobster", serif; text-shadow: 0 0.06em 0.12em rgba(0,0,0,0.1); margin-bottom: 0.3em; }
+td > div { border-radius: 1em; }
+input[type=file] { display: inline-block; }
+footer { opacity: 0.5; margin-bottom: 3em; }
+footer p { margin-bottom: 0.2em; }
+footer hr { margin: 10px 0; }
+#logo { margin-top: 20px; border-radius: 128px; }
+#countdown { font-family: monospace; }
+#detail h1 { font-size: 30px; }
+.progress { margin-bottom: 0; }
+[v-cloak] { display: none; }
+.btn input { display: none; }
+.sliding-transition {
+    -webkit-transition: all 1s ease 0s;
+    transition: all 1s ease 0s;
+}
+.delayedfade-transition {
+  -webkit-transition: all 1s ease 1s;
+  transition: all 1s ease 1s;
+}
+.delayedfade-enter, .delayedfade-leave {
+  opacity: 0;
+}

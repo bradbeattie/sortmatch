@@ -144,9 +144,11 @@ var vue = new Vue({
             tournamentSave();
         },
         matchRevert(match) {
-            match.result = null;
-            match.finished = null;
-            regenerateRatings();
+            if (confirm("Do you want to undo this match's result and place it back into the pool of pending matches?")) {
+                match.result = null;
+                match.finished = null;
+                regenerateRatings();
+            }
         },
         tournamentAdd() {
             var name = (prompt("Tournament title?") || "").trim();
@@ -170,6 +172,7 @@ var vue = new Vue({
         },
         tournamentDelete() {
             if (confirm("Your tournament will not be recoverable. Are you sure you're okay with deleting this tournament?")) {
+                vue.tournamentExport();
                 delete localStorage[URI_KEY];
                 location.href = "/";
             }
@@ -378,7 +381,7 @@ if (vue.name == "Example Tournament" && !vue.competitors.length) {
             matched: false
         });
     }
-    planMatches();
+    setTimeout(planMatches, 1200);
 }
 
 
@@ -404,3 +407,8 @@ function handleFileSelect(evt) {
     }
 }
 $("#files").on("change", handleFileSelect);
+
+
+if (!URI_KEY) {
+    $("body").css("background", "#FFE4B5");
+}

@@ -5,41 +5,12 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <title>Tournaments with SortMatch.ca</title>
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
-        <link href='https://fonts.googleapis.com/css?family=Fugaz+One|Cabin' rel='stylesheet' type='text/css'>
-        <style>
-            body { padding-top: 00px; background: #ccc url("brickwall.png"); font-family: "Cabin", sans-serif; }
-            table { width: 100%; margin-bottom: 20px; }
-            .table { background: #fff; }
-            .table, .unstyled .btn { box-shadow: 0 0.2em 0.4em rgba(0,0,0,0.2); }
-            .unstyled .btn { margin-top: 2px; margin-bottom: 2px; }
-            .table thead th, .table tfoot td { background: #fcfcfc; }
-            h1, h2, td, th, p, footer, .unstyled { text-align: center; }
-            h1, h2, h3 { font-family: "Fugaz One", serif; text-shadow: 0 0.06em 0.12em rgba(0,0,0,0.2); margin-bottom: 0.3em; }
-            td > div { border-radius: 1em; }
-            input[type=file] { display: inline-block; }
-            footer { opacity: 0.5; }
-            footer p { margin-bottom: 0.2em; }
-            footer hr { margin: 10px 0; }
-            #countdown { font-family: monospace; }
-            .progress { margin-bottom: 0; }
-            [v-cloak] { display: none; }
-            .btn input { display: none; }
-            .sliding-transition {
-                -webkit-transition: all 1s ease 0s;
-                transition: all 1s ease 0s;
-            }
-            .delayedfade-transition {
-              -webkit-transition: all 1s ease 1s;
-              transition: all 1s ease 1s;
-            }
-            .delayedfade-enter, .delayedfade-leave {
-              opacity: 0;
-            }
-        </style>
+        <link href='https://fonts.googleapis.com/css?family=Lobster|Cabin' rel='stylesheet' type='text/css'>
+        <link href='style.css' rel='stylesheet' type='text/css'>
     </head>
     <body>
         <div class="container theme-showcase" role="main" id="vue-app">
-            <div v-if="name" v-cloak>
+            <div id="detail" v-if="name" v-cloak>
                 <h1 v-if="!matches.length">{{ name || "Tournament" }}</h1>
                 <p v-if="competitors.length < 2">Start by adding at least 2 competitors</p>
                 <div class="row">
@@ -57,10 +28,10 @@
                                 <tr v-for="competitor in competitors | orderBy 'ranking.getRating()' -1">
                                     <td v-highlight="competitor.name">{{ competitor.name }}</td>
                                     <td v-highlight="competitor.matches.length">{{ competitor | matchesCompleted }}</td>
-                                    <td v-highlight="competitor.ranking.getRating()">
+                                    <td v-highlight="competitor.ranking.getRating()" title="{{ competitor.ranking.getRating() / 100 | round '2' }}">
                                         <div class="progress">
-                                            <div class="progress-bar" v-bind:class="{ 'progress-bar-striped': competitor.matched, 'progress-bar-info': competitor.matched, 'active': competitor.matched }" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: {{ competitor.ranking.getRating() / 22 }}%;">
-                                                {{ competitor.ranking.getRating() / 100 | round '1' }}
+                                            <div class="progress-bar" v-bind:class="{ 'progress-bar-striped': competitor.matched, 'progress-bar-info': competitor.matched, 'active': competitor.matched }" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: {{ Math.min(100, competitor.ranking.getRating() / 20) }}%;">
+                                                {{ competitor.ranking.getRating() / 100 | round '0' }}
                                             </div>
                                         </div>
                                     </td>
@@ -69,14 +40,11 @@
                             <tfoot>
                                 <tr>
                                     <td colspan="3">
-                                        <button class="btn btn-success" v-bind:class="{ 'btn-sm': matches.length }" v-on:click="competitorAdd"><span class="glyphicon glyphicon-plus"></span> Add competitor</button>
+                                        <button id="competitor-add" class="btn btn-success" v-bind:class="{ 'btn-sm': matches.length }" v-on:click="competitorAdd"><span class="glyphicon glyphicon-plus"></span> Add competitor</button>
                                     </td>
                                 </tr>
                             </tfoot>
                         </table>
-                        <p v-if="competitors.length && matches.length && matches.length < competitors.length * 5">Keep going until all competitors have at least 10 matches.</p>
-                        <p v-if="competitors.length && matches.length >= competitors.length * 5 && !paused">When you're satisfied enough matches have taken place, pause matchmaking and finish the remaining matches.</p>
-                        <p v-if="competitors.length && matches.length >= competitors.length * 5 && paused">Finish the remaining matches and declare the victor. Optionally, hold one final match between the top two competitors.</p>
                     </div>
                     <div class="col-sm-8" v-if="matches.length" transition="delayedfade">
                         <h2 v-if="matches.length">Pending Matches</h2>
@@ -138,6 +106,11 @@
                                 </tr>
                             </tfoot>
                         </table>
+                        <footer class="small">
+                            <p v-if="competitors.length && matches.length && matches.length < competitors.length * 5">Keep going until all competitors have completed at least 10 matches.</p>
+                            <p v-if="competitors.length && matches.length >= competitors.length * 5 && !paused">When you're satisfied enough matches have taken place, pause matchmaking and finish the remaining matches.</p>
+                            <p v-if="competitors.length && matches.length >= competitors.length * 5 && paused">Finish the remaining matches and declare the victor. Optionally, hold one final match between the top two competitors.</p>
+                        </footer>
                         <h2>Completed Matches</h2>
                         <table class="table">
                             <thead>
@@ -153,32 +126,31 @@
                                     <td v-highlight="match.start">{{ match.start.toLocaleTimeString() }}</td>
                                     <td v-bind:class="{ 'danger': match.result === RESULT_UNFAVORED, 'success': match.result === RESULT_FAVORED, 'warning': match.result === RESULT_TIE, 'info': match.result === RESULT_ABANDONED }">{{ match.favored.name }}</td>
                                     <td v-bind:class="{ 'danger': match.result === RESULT_FAVORED, 'success': match.result === RESULT_UNFAVORED, 'warning': match.result === RESULT_TIE, 'info': match.result === RESULT_ABANDONED }">{{ match.unfavored.name }}</td>
-                                    <td v-highlight="match.finished" v-on:dblclick="matchRevert(match)">{{ match.finished.toLocaleTimeString() }}</td>
+                                    <td v-highlight="match.finished" v-on:click="matchRevert(match)">{{ match.finished.toLocaleTimeString() }}</td>
                                 </tr>
                             </tbody>
                         </table>
-                        <footer class="small">
-                            <p>This tool is provided to help you run tournaments (e.g. hockey, tennis, chess, <a href="http://www.spyparty.com/">SpyParty</a>).</p>
-                            <p>Record results. Ratings are adjusted by how surprising the result of a match is.</p>
-                            <p>When you're done, pause the tournament, finish the remaining matches, then declare the victor.</p>
-                            <hr />
-                            <p>The underlying tournament system is <a href="https://en.wikipedia.org/wiki/Glicko_rating_system">Gicko2</a>, a system similar to <a href="https://en.wikipedia.org/wiki/Elo_rating_system">Elo</a>.</p>
-                            <p>The tournament is saved in your browser's cache.</p>
-                            <p>You can <a href="?First">run</a> <a href="?Second">multiple</a> <a href="?Third">tournaments</a> <a href="?Fourth">simultaneously</a>.</p>
-                            <p>You can stream results and facilitate conversations using services like <a href="http://www.twitch.tv/">Twitch</a>.</p>
-                        </footer>
                     </div>
                 </div>
             </div>
-            <div v-else class="unstyled" v-cloak>
-                <h2>Tournaments</h2>
-                <span v-for="tournamentName in tournamentNames">
-                    <a href="?{{ tournamentName }}" class="btn" v-bind:class="{ 'btn-primary': tournamentName == 'Example Tournament', 'btn-info': tournamentName != 'Example Tournament' }"><span class="glyphicon glyphicon-play"></span> {{ tournamentName }}</a>
-                </span>
-                <button class="btn btn-success" v-on:click="tournamentAdd"><span class="glyphicon glyphicon-plus"></span> Start a new tournament</button>
-                <hr />
+            <div id="index" v-else class="unstyled" v-cloak>
+                <p><img id="logo" src="trophy-icon.png" /></p>
+                <h1>Tournaments with SortMatch.ca</h1>
+                <p>
+                    <span v-for="tournamentName in tournamentNames">
+                        <a href="?{{ tournamentName }}" class="btn" v-bind:class="{ 'btn-primary': tournamentName == 'Example Tournament', 'btn-info': tournamentName != 'Example Tournament' }"><span class="glyphicon glyphicon-play"></span> {{ tournamentName }}</a>
+                    </span>
+                    <button class="btn btn-success" v-on:click="tournamentAdd"><span class="glyphicon glyphicon-plus"></span> Start a new tournament</button>
+                </p>
+                <footer class="small">
+                    <p>This tool is provided to help you run tournaments (e.g. hockey, tennis, chess, <a href="http://www.spyparty.com/">SpyParty</a>).</p>
+                    <p>The underlying tournament methodology is <a href="https://en.wikipedia.org/wiki/Glicko_rating_system">Gicko2</a>, a system similar to <a href="https://en.wikipedia.org/wiki/Elo_rating_system">Elo</a>.</p>
+                    <p>A competitor's rating is adjusted by how surprising the result of a match is.</p>
+                    <p>Tournaments are saved locally in your browser's cache and can be exported.</p>
+                    <p>You can stream results and facilitate conversations using services like <a href="http://www.twitch.tv/">Twitch</a>.</p>
+                </footer>
                 <h3>Import a downloaded tournament</h3>
-                <input type="file" id="files" name="files[]" multiple class="btn btn-success btn-sm" />
+                <input type="file" id="files" name="files[]" multiple class="btn btn-default btn-sm" />
             </div>
         </div>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/1.0.10/vue.min.js"></script>
