@@ -11,11 +11,12 @@
     <body>
         <div class="container theme-showcase" role="main" id="vue-app">
             <div id="detail" v-if="name" v-cloak>
-                <h1 v-if="!matches.length">{{ name || "Tournament" }}</h1>
-                <p v-if="competitors.length < 2">Start by adding at least 2 competitors</p>
+                <p v-if="banner"><img v-on:click="bannerChange" src="{{ banner }}" /></p>
                 <div class="row">
                     <div class="col-sm-4" v-bind:class="{ 'col-sm-offset-4': !matches.length, 'sliding-transition': matches.length }">
                         <h2 v-if="matches.length">{{ name || "Competitors" }}</h2>
+                        <h2 v-if="!matches.length">{{ name || "Tournament" }}</h2>
+                        <p v-if="competitors.length < 2">Start by adding at least 2 competitors</p>
                         <table v-bind:class="{ 'table': competitors.length, 'unstyled': !competitors.length }">
                             <thead v-if="competitors.length">
                                 <tr>

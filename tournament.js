@@ -2,7 +2,7 @@ var RESULT_FAVORED = 1;
 var RESULT_TIE = 0.5;
 var RESULT_UNFAVORED = 0;
 var RESULT_ABANDONED = null;
-var URI_KEY = decodeURIComponent(location.search.substring(1));
+var URI_KEY = decodeURIComponent(location.search.substring(1).split("&")[0]);
 
 
 Vue.directive('highlight', function() {
@@ -54,6 +54,7 @@ for (var key in localStorage){
 var vue_data = {
     tournamentNames: tournamentNames,
     name: URI_KEY,
+    banner: "https://sortmatch.ca/banner.jpg",
     ranking: new glicko2.Glicko2(),
     started: new Date(),
     pageLoad: new Date(),
@@ -177,6 +178,16 @@ var vue = new Vue({
                 location.href = "/";
             }
         },
+        bannerChange() {
+            var url = (prompt("New banner URL?") || "").trim();
+            if (!url) {
+            } else if (url.startsWith("http://") || url.startsWith("https://")) {
+                vue.banner = url;
+                tournamentSave();
+            } else {
+                alert("Banner URLs must start with `https://` or `http://`");
+            }
+        },
         competitorAdd() {
             var name = (prompt("Competitor's name?") || "").trim();
             if (!name) {
@@ -205,7 +216,8 @@ function tournamentSave(obj) {
         started: vue.started,
         competitors: vue.competitors,
         matches: vue.matches,
-        paused: vue.paused
+        paused: vue.paused,
+        banner: vue.banner
     });
 }
 function tournamentLoad() {
@@ -409,6 +421,4 @@ function handleFileSelect(evt) {
 $("#files").on("change", handleFileSelect);
 
 
-if (!URI_KEY) {
-    $("body").css("background", "#FFE4B5");
-}
+$("body").addClass(URI_KEY ? "detail" : "index");
