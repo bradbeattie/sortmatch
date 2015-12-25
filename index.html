@@ -14,8 +14,7 @@
                 <p v-if="banner"><img v-on:click="bannerChange" src="{{ banner }}" /></p>
                 <div class="row">
                     <div class="col-sm-4" v-bind:class="{ 'col-sm-offset-4': !matches.length, 'sliding-transition': matches.length }">
-                        <h2 v-if="matches.length">{{ name || "Competitors" }}</h2>
-                        <h2 v-if="!matches.length">{{ name || "Tournament" }}</h2>
+                        <h2>Competitors</h2>
                         <p v-if="competitors.length < 2">Start by adding at least 2 competitors</p>
                         <table v-bind:class="{ 'table': competitors.length, 'unstyled': !competitors.length }">
                             <thead v-if="competitors.length">
@@ -99,6 +98,7 @@
                                             <button class="btn btn-default btn-sm dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true"><span class="glyphicon glyphicon-cog"></span> <span class="caret"></span></button>
                                             <ul class="dropdown-menu dropdown-menu-right">
                                                 <li><a href="#" v-on:click="tournamentExport">Export tournament</a>
+                                                <li><a href="#" v-on:click="bannerChange">Change banner</a>
                                                 <li role="separator" class="divider"></li>
                                                 <li><a href="#" v-on:click="tournamentDelete">Delete tournament</a>
                                             </ul>

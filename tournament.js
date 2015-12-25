@@ -180,12 +180,11 @@ var vue = new Vue({
         },
         bannerChange() {
             var url = (prompt("New banner URL?") || "").trim();
-            if (!url) {
-            } else if (url.startsWith("http://") || url.startsWith("https://")) {
+            if (!url || url.startsWith("http://") || url.startsWith("https://")) {
                 vue.banner = url;
                 tournamentSave();
             } else {
-                alert("Banner URLs must start with `https://` or `http://`");
+                alert("Banner URLs must start with `https://` or `http://` or be blank.");
             }
         },
         competitorAdd() {
