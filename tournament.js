@@ -44,8 +44,8 @@ Vue.filter('round', function(value, decimals) {
 
 
 var tournamentNames = ["Example Tournament"];
-for (var key in localStorage){
-    if (tournamentNames.indexOf(key) === -1) {
+for (var key in localStorage) {
+    if (tournamentNames.hasOwnProperty(key) && key !== "length") {
         tournamentNames.push(key);
     }
 }
@@ -210,7 +210,7 @@ var vue = new Vue({
 });
 
 
-function tournamentSave(obj) {
+function tournamentSave() {
     localStorage[URI_KEY] = objectToJSON({
         started: vue.started,
         competitors: vue.competitors,
