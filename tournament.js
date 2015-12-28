@@ -213,8 +213,8 @@ var vue = new Vue({
             $("#competitor-add-multiple").modal("hide");
         },
         competitorInitialRatingChange(competitor) {
-            var initialRating = parseInt(prompt("Competitor's initial rating? (10-20)", "15") * 100) || competitor.initialRating;
-            competitor.initialRating = Math.max(800, Math.min(2000, initialRating));
+            var initialRating = parseInt(prompt("Competitor's initial rating? (5-20)", "12") * 100) || competitor.initialRating;
+            competitor.initialRating = Math.max(500, Math.min(2000, initialRating));
             regenerateRatings();
             tournamentSave();
         },
