@@ -191,7 +191,7 @@ var vue = new Vue({
             var name = (prompt("Competitor's name?") || "").trim();
             if (!name) {
             } else if (vue.competitors.filter(function(competitor) { return competitor.name == name; }).length !== 0) {
-                console.log("Duplicate name provided.");
+                alert("Duplicate name provided.");
             } else {
                 var initialRating = parseInt(prompt("Competitor's initial rating? (10-20)", "15") * 100) || vue.ranking._default_rating;
                 initialRating = Math.max(1000, Math.min(2000, initialRating));
@@ -204,6 +204,20 @@ var vue = new Vue({
                 });
                 planMatches();
                 tournamentSave();
+            }
+        },
+        competitorInitialRatingChange(competitor) {
+            var initialRating = parseInt(prompt("Competitor's initial rating? (10-20)", "15") * 100) || competitor.initialRating.rating;
+            competitor.initialRating = Math.max(1000, Math.min(2000, initialRating));
+            regenerateRatings();
+        },
+        competitorNameChange(competitor) {
+            var name = (prompt("Competitor's name?") || "").trim();
+            if (!name) {
+            } else if (vue.competitors.filter(function(c) { return c.name == name; }).length !== 0) {
+                alert("Duplicate name provided.");
+            } else {
+                competitor.name = name;
             }
         }
     }

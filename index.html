@@ -26,10 +26,10 @@
                             </thead>
                             <tbody>
                                 <tr v-for="competitor in competitors | orderBy 'ranking.getRating()' -1">
-                                    <td v-highlight="competitor.name">{{ competitor.name }}</td>
+                                    <td v-highlight="competitor.name" v-on:click="competitorNameChange(competitor)">{{ competitor.name }}</td>
                                     <td v-highlight="competitor.matches.length">{{ competitor | matchesCompleted }}</td>
                                     <td v-highlight="competitor.ranking.getRating()" title="{{ competitor.ranking.getRating() / 100 | round '2' }}">
-                                        <div class="progress">
+                                        <div class="progress" v-on:click="competitorInitialRatingChange(competitor)">
                                             <div class="progress-bar" v-bind:class="{ 'progress-bar-striped': competitor.matched, 'progress-bar-info': competitor.matched, 'active': competitor.matched }" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: {{ Math.min(100, competitor.ranking.getRating() / 20) }}%;">
                                                 {{ competitor.ranking.getRating() / 100 | round '0' }}
                                             </div>
