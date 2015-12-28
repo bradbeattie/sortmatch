@@ -189,7 +189,7 @@ var vue = new Vue({
         },
         competitorAdd(name) {
             if (!name) {
-                var name = (prompt("Competitor's name?") || "").trim();
+                name = (prompt("Competitor's name?") || "").trim();
             }
             if (!name) {
             } else if (vue.competitors.filter(function(competitor) { return competitor.name == name; }).length !== 0) {
