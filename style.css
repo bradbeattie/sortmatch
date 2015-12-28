@@ -23,3 +23,5 @@ td > div { border-radius: 1em; }
 .sliding-transition { -webkit-transition: all 1s ease 0s; transition: all 1s ease 0s; }
 .delayedfade-transition { -webkit-transition: all 1s ease 1s; transition: all 1s ease 1s; }
 .delayedfade-enter, .delayedfade-leave { opacity: 0; }
+#competitor-add-multiple p { text-align: left; }
+#competitor-add-multiple textarea { height: 20em; }

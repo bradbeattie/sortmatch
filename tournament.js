@@ -187,18 +187,18 @@ var vue = new Vue({
                 alert("Banner URLs must start with `https://` or `http://` or be blank.");
             }
         },
-        competitorAdd() {
-            var name = (prompt("Competitor's name?") || "").trim();
+        competitorAdd(name) {
+            if (!name) {
+                var name = (prompt("Competitor's name?") || "").trim();
+            }
             if (!name) {
             } else if (vue.competitors.filter(function(competitor) { return competitor.name == name; }).length !== 0) {
                 alert("Duplicate name provided.");
             } else {
-                var initialRating = parseInt(prompt("Competitor's initial rating? (10-20)", "15") * 100) || vue.ranking._default_rating;
-                initialRating = Math.max(1000, Math.min(2000, initialRating));
                 vue.competitors.push({
                     name: name,
-                    initialRating: initialRating,
-                    ranking: vue.ranking.makePlayer(initialRating, vue.ranking._default_rd, vue.ranking._default_vol),
+                    initialRating: vue.ranking._default_rating,
+                    ranking: vue.ranking.makePlayer(vue.ranking._default_rating, vue.ranking._default_rd, vue.ranking._default_vol),
                     matches: [],
                     matched: false
                 });
@@ -206,10 +206,17 @@ var vue = new Vue({
                 tournamentSave();
             }
         },
+        competitorAddMultiple() {
+            $("#competitor-add-multiple textarea").val().split("\n").forEach(function(name, index) {
+                vue.competitorAdd(name);
+            });
+            $("#competitor-add-multiple").modal("hide");
+        },
         competitorInitialRatingChange(competitor) {
-            var initialRating = parseInt(prompt("Competitor's initial rating? (10-20)", "15") * 100) || competitor.initialRating.rating;
-            competitor.initialRating = Math.max(1000, Math.min(2000, initialRating));
+            var initialRating = parseInt(prompt("Competitor's initial rating? (10-20)", "15") * 100) || competitor.initialRating;
+            competitor.initialRating = Math.max(800, Math.min(2000, initialRating));
             regenerateRatings();
+            tournamentSave();
         },
         competitorNameChange(competitor) {
             var name = (prompt("Competitor's name?") || "").trim();
@@ -218,6 +225,7 @@ var vue = new Vue({
                 alert("Duplicate name provided.");
             } else {
                 competitor.name = name;
+                tournamentSave();
             }
         }
     }
