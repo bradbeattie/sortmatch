@@ -1,0 +1,49 @@
+Tournaments with SortMatch.ca
+Start a new tournament
+Import a downloaded tournament
+This tool is provided to help you run tournaments (e.g. hockey, tennis, chess, <a href='http://www.spyparty.com/'>SpyParty</a>).
+The underlying tournament methodology is Gicko2, a system similar to Elo.
+A competitor's rating is adjusted by how surprising the result of a match is.
+Tournaments are saved locally in your browser's cache and can be exported.
+You can stream results and facilitate conversations using services like TwitchTV.
+Feedback? Send me an email at bradbeattie@gmail.com.
+Could you help me translate this site?
+Remember, tournaments are for comparing competitors two at a time and declaring a winner. If you need a tool for creating elections, try ModernBallots.com instead.
+Start by adding at least 2 competitors.
+Each line will be processed as a separate competitor. Duplicates will be ignored.
+Keep going until all competitors have completed at least 10 matches.
+When you're satisfied enough matches have taken place, pause the matchmaking and finish the remaining matches.
+Finish the remaining matches and declare the victor. Optionally, hold one final match between the top two competitors.
+Cancel
+Competitors
+Name
+Competitor's name?
+Duplicate name provided.
+Matches
+Rating
+Competitor's initial rating? (5-20)
+Add competitor
+Add multiple competitors
+Do you want to undo this match's result and place it back into the pool of pending matches?
+Pending matches
+Matched
+Favored
+Challenger
+Finished
+Record result
+Win for {NAME}
+Tie
+Match did not take place
+Completed Matches
+Pause matchmaking
+Continue matchmaking
+Next matchmaking: {SECONDS}s
+Benign Actions
+Export tournament
+Change banner
+New banner URL?
+Banner URLs must start with `https://` or `http://` or be blank.
+Destructive Actions
+Delete tournament
+Your tournament will not be recoverable. Are you sure you're okay with deleting this tournament?
+Tournament title?
