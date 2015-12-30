@@ -52,6 +52,7 @@ for (var key in localStorage) {
 
 
 var vue_data = {
+    lang: locale,
     tournamentNames: tournamentNames,
     name: URI_KEY,
     banner: "https://sortmatch.ca/banner.jpg",
@@ -116,6 +117,24 @@ function jsonToObject(json) {
     }
 }
 
+
+function tournamentSave() {
+    localStorage[URI_KEY] = objectToJSON({
+        started: vue.started,
+        competitors: vue.competitors,
+        matches: vue.matches,
+        paused: vue.paused,
+        banner: vue.banner
+    });
+}
+if (localStorage[URI_KEY]) {
+    parsed = jsonToObject(localStorage[URI_KEY]);
+    for (var k in parsed) {
+        vue_data[k] = parsed[k];
+    }
+}
+
+
 var vue = new Vue({
     el: '#vue-app',
     data: vue_data,
@@ -145,14 +164,22 @@ var vue = new Vue({
             tournamentSave();
         },
         matchRevert(match) {
-            if (confirm("Do you want to undo this match's result and place it back into the pool of pending matches?")) {
+            if (confirm(vue.lang.matchesRevertPrompt)) {
                 match.result = null;
                 match.finished = null;
                 regenerateRatings();
             }
         },
+        matchDeleteAll() {
+            vue.competitors.forEach(function(competitor, index) {
+                competitor.matches = []
+                competitor.matched = false;
+            });
+            vue.matches = [];
+            planMatches();
+        },
         tournamentAdd() {
-            var name = (prompt("Tournament title?") || "").trim();
+            var name = (prompt(vue.lang.tournamentTitlePrompt) || "").trim();
             if (name) {
                 location.href = "/?" + encodeURIComponent(name);
             }
@@ -172,28 +199,27 @@ var vue = new Vue({
             );
         },
         tournamentDelete() {
-            if (confirm("Your tournament will not be recoverable. Are you sure you're okay with deleting this tournament?")) {
-                vue.tournamentExport();
+            if (confirm(vue.lang.tournamentDeleteConfirm)) {
                 delete localStorage[URI_KEY];
                 location.href = "/";
             }
         },
         bannerChange() {
-            var url = (prompt("New banner URL?") || "").trim();
+            var url = (prompt(vue.lang.tournamentBannerPrompt) || "").trim();
             if (!url || url.startsWith("http://") || url.startsWith("https://")) {
                 vue.banner = url;
                 tournamentSave();
             } else {
-                alert("Banner URLs must start with `https://` or `http://` or be blank.");
+                alert(vue.lang.tournamentBannerWhine);
             }
         },
         competitorAdd(name) {
             if (!name) {
-                name = (prompt("Competitor's name?") || "").trim();
+                name = (prompt(vue.lang.competitorNamePrompt) || "").trim();
             }
             if (!name) {
             } else if (vue.competitors.filter(function(competitor) { return competitor.name == name; }).length !== 0) {
-                alert("Duplicate name provided.");
+                alert(vue.lang.competitorNameWhine);
             } else {
                 vue.competitors.push({
                     name: name,
@@ -207,22 +233,24 @@ var vue = new Vue({
             }
         },
         competitorAddMultiple() {
-            $("#competitor-add-multiple textarea").val().split("\n").forEach(function(name, index) {
-                vue.competitorAdd(name);
+            $("#competitor-add-multiple textarea").val().trim().split("\n").forEach(function(name, index) {
+                if (name) {
+                    vue.competitorAdd(name);
+                }
             });
             $("#competitor-add-multiple").modal("hide");
         },
         competitorInitialRatingChange(competitor) {
-            var initialRating = parseInt(prompt("Competitor's initial rating? (5-20)", "12") * 100) || competitor.initialRating;
+            var initialRating = parseInt(prompt(vue.lang.competitorRatingPrompt, competitor.initialRating / 100) * 100) || competitor.initialRating;
             competitor.initialRating = Math.max(500, Math.min(2000, initialRating));
             regenerateRatings();
             tournamentSave();
         },
         competitorNameChange(competitor) {
-            var name = (prompt("Competitor's name?") || "").trim();
+            var name = (prompt(vue.lang.competitorNamePrompt) || "").trim();
             if (!name) {
-            } else if (vue.competitors.filter(function(c) { return c.name == name; }).length !== 0) {
-                alert("Duplicate name provided.");
+            } else if (vue.competitors.filter(function(competitor) { return competitor.name == name; }).length !== 0) {
+                alert(vue.lang.competitorNameWhine);
             } else {
                 competitor.name = name;
                 tournamentSave();
@@ -230,27 +258,6 @@ var vue = new Vue({
         }
     }
 });
-
-
-function tournamentSave() {
-    localStorage[URI_KEY] = objectToJSON({
-        started: vue.started,
-        competitors: vue.competitors,
-        matches: vue.matches,
-        paused: vue.paused,
-        banner: vue.banner
-    });
-}
-function tournamentLoad() {
-    parsed = jsonToObject(localStorage[URI_KEY]);
-    for (var k in parsed) {
-        vue_data[k] = parsed[k];
-    }
-    regenerateRatings();
-}
-if (localStorage[URI_KEY]) {
-    tournamentLoad();
-}
 
 
 function suitability(considering, competitor) {
@@ -318,6 +325,7 @@ function planMatches() {
 
     // Pair up available competitors
     var considered = [];
+    var any_planned = false;
     while (true) {
         var unassigned = vue.competitors.filter(function(competitor) {
             return competitor.matches.filter(function(match) {
@@ -359,12 +367,18 @@ function planMatches() {
             pairing.matches.push(match);
             pairing.matched = true;
             vue.matches.push(match);
+            any_planned = true;
         }
+    }
+
+    if (any_planned) {
+        tournamentSave();
     }
 }
 
 
 // Plan matches immediately upon page load
+regenerateRatings();
 planMatches();
 
 
@@ -372,16 +386,6 @@ planMatches();
 setInterval(function() {
     vue.countdown = Math.max(0, vue.countdown - 1);
 }, 1000);
-
-
-// Start the page focused on the competitor add button
-$("#competitor-add").focus();
-
-
-// Prevent "#" links from changing the url hash
-$(document).on("click", "a[href=#]", function(event) {
-    event.preventDefault();
-});
 
 
 // If the tournament is named "Example Tournament", run the demo
@@ -414,8 +418,18 @@ if (vue.name == "Example Tournament" && !vue.competitors.length) {
             matched: false
         });
     }
-    setTimeout(planMatches, 1200);
+    setTimeout(planMatches, 1300);
 }
+
+
+// Start the page focused on the competitor add button
+$("#competitor-add").focus();
+
+
+// Prevent "#" links from changing the url hash
+$(document).on("click", "a[href=#]", function(event) {
+    event.preventDefault();
+});
 
 
 // Handle file uploads
