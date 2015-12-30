@@ -48,6 +48,5 @@ var locale = {
     tournamentDestructive: "Destructive Actions",
     tournamentDelete: "Delete tournament",
     tournamentDeleteConfirm: "Your tournament will not be recoverable. Are you sure you're okay with deleting this tournament?",
-    tournamentTitlePrompt: "Tournament title?",
-    statusContinue: "Keep going until all competitors have completed at least 10 matches."
+    tournamentTitlePrompt: "Tournament title?"
 };
