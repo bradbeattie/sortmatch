@@ -8,6 +8,7 @@ var locale = {
           + "<p>Tournaments are saved locally in your browser's cache and can be exported.</p>"
           + "<p>You can stream results and facilitate conversations using services like <a href='http://www.twitch.tv/'>Twitch</a>.</p>"
           + "<p>Feedback? Send me an email at <a href='mailto:bradbeattie@gmail.com'>bradbeattie@gmail.com</a>.</p>"
+          + "<p><a href='mailto:bradbeattie@gmail.com'>Could you help me translate this site?</a></p>"
           + "<hr />"
           + "<p>Remember, tournaments are for comparing competitors two at a time and declaring a winner.<br/>If you need a tool for creating elections, try <a href='https://modernballots.com'>ModernBallots.com</a> instead.</p>",
     hintStart: "Start by adding at least 2 competitors",

@@ -1,13 +1,14 @@
 var locale = {
-    indexHeader: "Tournaments avec SortMatch.ca",
-    indexAdd: "Lancer un tournement nouveau",
-    indexImport: "Import a downloaded tournament",
+    indexHeader: "Tournois avec SortMatch.ca",
+    indexAdd: "Lancer un tournoi nouveau",
+    indexImport: "Importer un tournoi téléchargé",
     indexFooter: "<p>This tool is provided to help you run tournaments (e.g. hockey, tennis, chess, <a href='http://www.spyparty.com/'>SpyParty</a>).</p>"
           + "<p>The underlying tournament methodology is <a href='https://en.wikipedia.org/wiki/Glicko_rating_system'>Gicko2</a>, a system similar to <a href='https://en.wikipedia.org/wiki/Elo_rating_system'>Elo</a>.</p>"
           + "<p>A competitor's rating is adjusted by how surprising the result of a match is.</p>"
           + "<p>Tournaments are saved locally in your browser's cache and can be exported.</p>"
           + "<p>You can stream results and facilitate conversations using services like <a href='http://www.twitch.tv/'>Twitch</a>.</p>"
           + "<p>Feedback? Send me an email at <a href='mailto:bradbeattie@gmail.com'>bradbeattie@gmail.com</a>.</p>"
+          + "<p><a href='https://github.com/bradbeattie/sortmatch/blob/master/lang.js.fr'>Pouvez-vous m'aider traduire cette site?</a></p>"
           + "<hr />"
           + "<p>Remember, tournaments are for comparing competitors two at a time and declaring a winner.<br/>If you need a tool for creating elections, try <a href='https://modernballots.com'>ModernBallots.com</a> instead.</p>",
     hintStart: "Start by adding at least 2 competitors",
@@ -20,14 +21,14 @@ var locale = {
     competitorName: "Nom",
     competitorNamePrompt: "Nom du concurrent?",
     competitorNameWhine: "Duplicate name provided.",
-    competitorMatches: "Matches",
-    competitorRating: "Rating",
+    competitorMatches: "Matchs",
+    competitorRating: "Niveau",
     competitorRatingPrompt: "Competitor's initial rating? (5-20)",
-    competitorAdd: "Add competitor",
+    competitorAdd: "Ajoutez concurrent",
     competitorAddMultiple: "Ajoute plusieur concurrents",
     matchesRevertPrompt: "Do you want to undo this match's result and place it back into the pool of pending matches?",
     matchesPending: "Matchs en Attente",
-    matchesMatched: "Matched",
+    matchesMatched: "Planifié",
     matchesFavored: "Favorisé",
     matchesChallenger: "Adversaire",
     matchesFinished: "Réalisé",
