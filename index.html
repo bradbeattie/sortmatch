@@ -84,11 +84,11 @@
                                         <div class="dropdown">
                                             <button class="btn btn-success btn-xs dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">{{ lang.matchesRecord }} <span class="caret"></span></button>
                                             <ul class="dropdown-menu dropdown-menu-right">
-                                                <li><a href="#" v-on:click="matchResolve(match, RESULT_FAVORED)">Win for {{ match.favored.name }}</a></li>
-                                                <li><a href="#" v-on:click="matchResolve(match, RESULT_TIE)">Tie</a></li>
-                                                <li><a href="#" v-on:click="matchResolve(match, RESULT_UNFAVORED)">Win for {{ match.unfavored.name }}</a></li>
+                                                <li><a href="#" v-on:click="matchResolve(match, RESULT_FAVORED)">{{ lang.matchesWin }} {{ match.favored.name }}</a></li>
+                                                <li><a href="#" v-on:click="matchResolve(match, RESULT_TIE)">{{ lang.matchesTie }}</a></li>
+                                                <li><a href="#" v-on:click="matchResolve(match, RESULT_UNFAVORED)">{{ lang.matchesWin }} {{ match.unfavored.name }}</a></li>
                                                 <li role="separator" class="divider"></li>
-                                                <li><a href="#" v-on:click="matchResolve(match, RESULT_ABANDONED)">Match did not take place</a></li>
+                                                <li><a href="#" v-on:click="matchResolve(match, RESULT_ABANDONED)">{{ lang.matchesSkipped }}</a></li>
                                             </ul>
                                         </div>
                                     </td>

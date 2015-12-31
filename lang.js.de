@@ -1,0 +1,52 @@
+var locale = {
+    indexHeader: "Turniere mit SortMatch.ca",
+    indexAdd: "Starte ein neues Turnier",
+    indexImport: "Importiere ein heruntergeladenes Turnier",
+    indexFooter: "<p>Dieses Tool hilft dir Turniere zu starten (z.B. Hockey, Tennis, Schach, <a href='http://www.spyparty.com/'>SpyParty</a>).</p>"
+          + "<p>Die grundlegende Turniermethodik ist <a href='https://en.wikipedia.org/wiki/Glicko_rating_system'>Gicko2</a>, ein System ähnlich wie <a href='https://de.wikipedia.org/wiki/Elo-Zahl'>Elo</a>.</p>"
+          + "<p>Eine Bewertung des Teilnehmers richtet sich nach der Diskrepanz zwischen Erwartungswert und Ergebnis.</p>"
+          + "<p>Turniere sind in deinem Browser-cache lokal gespeichert und können exportiert werden.</p>"
+          + "<p>Du kannst Ergebnisse streamen und Unterhaltungen ermöglichen, indem du Dienste wie <a href='http://www.twitch.tv/'>Twitch</a> benutzt.</p>"
+          + "<p>Feedback? Schicke mir eine Email an <a href='mailto:bradbeattie@gmail.com'>bradbeattie@gmail.com</a>.</p>"
+          + "<p><a href='mailto:bradbeattie@gmail.com'>Kannst du mir helfen diese Seite zu übersetzen?</a></p>"
+          + "<hr />"
+          + "<p>Zur Erinnerung, Turniere sind dafür da, um zwei Teilnehmer zur gleichen Zeit zu vergleichen und einen Gewinner zu ermitteln.<br/>Wenn du ein Tool brauchst, um Abstimmungen zu erstellen, versuche stattdessen <a href='https://modernballots.com'>ModernBallots.com</a>.</p>",
+    hintStart: "Beginne, indem du zunächst zwei Gegner hinzufügst.",
+    hintBulkAdd: "Jede einzelne Zeile wird als separater Gegner angezeigt. Doppelte werden ignoriert.",
+    hintContinueUntil: "Fahre fort bis alle Gegner mindestens 10 Spiele abgeschlossen haben.",
+    hintPauseWhenDone: "Wenn du mit den stattgefundenen Spielen zufrieden genug bist, pausiere die Spielsitzung und beende die restlichen Spiele.",
+    hintFinishRemaining: "Beende die restlichen Spiele und erkläre den Gewinner. Spiele nach Belieben ein Finale zwischen den beiden besten Gegnern.",
+    cancel: "Abbrechen",
+    competitors: "Gegner",
+    competitorName: "Name",
+    competitorNamePrompt: "Name des Gegners?",
+    competitorNameWhine: "Doppelten Namen angegeben.",
+    competitorMatches: "Spiele",
+    competitorRating: "Bewertung",
+    competitorRatingPrompt: "Erst-Bewertung vom Gegner? (5-20)",
+    competitorAdd: "Gegner hinzufügen",
+    competitorAddMultiple: "Mehrere Gegner hinzufügen",
+    matchesRevertPrompt: "Möchtest du dieses Spielergebnis rückgängig machen und es in den Spieleinsatz der ausstehenden Spiele setzen?",
+    matchesPending: "Ausstehende Spiele",
+    matchesMatched: "Gespielt",
+    matchesFavored: "Favorisiert",
+    matchesChallenger: "Herausforderer",
+    matchesFinished: "Beendet",
+    matchesRecord: "Rekordergebnis",
+    matchesWin: "Sieg für",
+    matchesTie: "Unentschieden",
+    matchesSkipped: "Spiel hat nicht stattgefunden",
+    matchesCompleted: "Abgeschlossene Spiele",
+    tournamentPause: "Spielsitzung pausieren",
+    tournamentContinue: "Spielsitzung fortfahren",
+    tournamentNext: "Nächste Spielsitzung: ",
+    tournamentBenign: "Harmlose Aktionen",
+    tournamentExport: "Turnier exportieren",
+    tournamentBanner: "Banner wechseln",
+    tournamentBannerPrompt: "Neue Banner URL?",
+    tournamentBannerWhine: "Banner URLs müssen mit `https://` oder `http://` beginnen oder blank sein.",
+    tournamentDestructive: "Vernichtende Aktionen",
+    tournamentDelete: "Turnier löschen",
+    tournamentDeleteConfirm: "Dein Turnier wird nicht wiederherstellbar sein. Bist du sicher damit einverstanden, dass das Turnier gelöscht wird?",
+    tournamentTitlePrompt: "Turniertitel?"
+};
