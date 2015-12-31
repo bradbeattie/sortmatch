@@ -3,7 +3,7 @@ var locale = {
     indexAdd: "Empezar un nuevo torneo",
     indexImport: "Importar un torneo descargado",
     indexFooter: "<p>Esta herramienta se facilita para ayudar a operar torneos (p.ej. hockey, tenis, ajedrez, <a href='http://www.spyparty.com/'>SpyParty</a>).</p>"
-          + "<p>La metodología de torneos subyacente es <a href='https://es.wikipedia.org/wiki/Sistema_de_puntuaci%C3%B3n_Glicko'>Gicko2</a>, un sistema similar a <a href='https://es.wikipedia.org/wiki/Sistema_de_puntuaci%C3%B3n_Elo'>Elo</a>.
+          + "<p>La metodología de torneos subyacente es <a href='https://es.wikipedia.org/wiki/Sistema_de_puntuaci%C3%B3n_Glicko'>Gicko2</a>, un sistema similar a <a href='https://es.wikipedia.org/wiki/Sistema_de_puntuaci%C3%B3n_Elo'>Elo</a>."
           + "<p>La puntuación de los competidores se ajusta según lo sorprendente que sea el resultado de un partido.</p>"
           + "<p>Los torneos se guardan de manera local en la caché del navegador y pueden ser exportados.</p>"
           + "<p>Puede transmitir los resultados y facilitar conversaciones usando servicios como <a href='http://www.twitch.tv/'>Twitch</a>.</p>"
