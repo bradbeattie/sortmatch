@@ -33,7 +33,7 @@ var locale = {
     matchesChallenger: "Adversaire",
     matchesFinished: "Réalisé",
     matchesRecord: "Enregistrez résultat",
-    matchesWin: "Win for {name}",
+    matchesWin: "Win for",
     matchesTie: "Tie",
     matchesSkipped: "Match did not take place",
     matchesCompleted: "Matchs Joués",
