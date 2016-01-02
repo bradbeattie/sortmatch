@@ -23,6 +23,7 @@ var locale = {
     competitorNameWhine: "Doppelten Namen angegeben.",
     competitorMatches: "Spiele",
     competitorRating: "Bewertung",
+    competitorInitialRating: "Erst-Bewertung",
     competitorRatingPrompt: "Erst-Bewertung vom Gegner? (5-20)",
     competitorAdd: "Gegner hinzufügen",
     competitorAddMultiple: "Mehrere Gegner hinzufügen",

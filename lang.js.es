@@ -23,6 +23,7 @@ var locale = {
     competitorNameWhine: "Se ha introducido un nombre duplciado.",
     competitorMatches: "Partidos",
     competitorRating: "Clasificación",
+    competitorInitialRating: "Clasificación inicial",
     competitorRatingPrompt: "¿Clasificación inicial del competidor? (5-20)",
     competitorAdd: "Añadir competidor",
     competitorAddMultiple: "Añadir múltiples competidores",

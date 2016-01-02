@@ -23,19 +23,31 @@
                                     <th>{{ lang.competitorName }}</th>
                                     <th>{{ lang.competitorMatches }}</th>
                                     <th>{{ lang.competitorRating }}</th>
+                                    <th></th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr v-for="competitor in competitors | orderBy '(paused ? 0 : 10000) + ranking.getRating()' -1">
-                                    <td v-highlight="competitor.name" v-on:click="competitorNameChange(competitor)" v-bind:class="{ 'text-muted': competitor.paused }">{{ competitor.name }}</td>
-                                    <td v-highlight="competitor.matches.length" v-on:click="competitorPause(competitor)" v-bind:class="{ 'text-muted': competitor.paused }">{{ competitor | matchesCompleted }}</td>
+                                    <td v-highlight="competitor.name" v-bind:class="{ 'text-muted': competitor.paused }">
+                                        <span class="dropdown">
+                                            <span class="dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">{{ competitor.name }} <span class="caret"></span></span>
+                                            <ul class="dropdown-menu">
+                                                <li><a href="#" v-on:click="competitorNameChange(competitor)">{{ lang.competitorName }}</a>
+                                                <li><a href="#" v-on:click="competitorInitialRatingChange(competitor)">{{ lang.competitorInitialRating }}</a>
+                                                <li><a href="#" v-on:click="competitorPause(competitor)"><span v-if="competitor.paused">{{ lang.tournamentContinue }}</span><span v-else>{{ lang.tournamentPause }}</span></a>
+                                            </ul>
+                                        </span>
+                                    </td>
+                                    <td v-highlight="competitor.matches.length" v-bind:class="{ 'text-muted': competitor.paused }">{{ competitor | matchesCompleted }}</td>
                                     <td v-highlight="competitor.ranking.getRating()" title="{{ competitor.ranking.getRating() / 100 | round '2' }}">
-                                        <div class="progress" v-on:click="competitorInitialRatingChange(competitor)">
+                                        <div class="progress">
                                             <div class="progress-bar" v-bind:class="{ 'progress-bar-striped': competitor.matched, 'progress-bar-info': competitor.matched, 'progress-bar-danger': competitor.paused, 'active': competitor.matched }" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: {{ Math.min(100, competitor.ranking.getRating() / 20) }}%;">
                                                 <span v-if="competitor.ranking.getRating() >= 1400">{{ competitor.ranking.getRating() / 100 | round '1' }}</span>
                                                 <span v-else>{{ competitor.ranking.getRating() / 100 | round '0' }}</span>
                                             </div>
                                         </div>
+                                    </td>
+                                    <td>
                                     </td>
                                 </tr>
                             </tbody>
@@ -43,7 +55,7 @@
                                 <tr>
                                     <td colspan="3">
                                         <div class="btn-group">
-                                            <button id="competitor-add" class="btn btn-success" v-bind:class="{ 'btn-sm': matches.length }" v-on:click="competitorAdd"><span class="glyphicon glyphicon-plus"></span> {{ lang.competitorAdd }}</button>
+                                            <button id="competitor-add" class="btn btn-success" v-bind:class="{ 'btn-sm': matches.length }" v-on:click="competitorAdd(null)"><span class="glyphicon glyphicon-plus"></span> {{ lang.competitorAdd }}</button>
                                             <button title="{{ lang.competitorAddMultiple }}" class="btn btn-success" v-bind:class="{ 'btn-sm': matches.length }" data-toggle="modal" data-target="#competitor-add-multiple"><span class="glyphicon glyphicon-th-list"></span></button>
                                         </div>
                                         <div class="modal fade" id="competitor-add-multiple" tabindex="-1" role="dialog">
@@ -148,7 +160,7 @@
                                     <td v-highlight="match.start">{{ match.start.toLocaleTimeString() }}</td>
                                     <td v-bind:class="{ 'text-muted': match.favored.paused,   'danger': match.result === RESULT_UNFAVORED, 'success': match.result === RESULT_FAVORED, 'warning': match.result === RESULT_TIE, 'info': match.result === RESULT_ABANDONED }">{{ match.favored.name }}</td>
                                     <td v-bind:class="{ 'text-muted': match.unfavored.paused, 'danger': match.result === RESULT_FAVORED, 'success': match.result === RESULT_UNFAVORED, 'warning': match.result === RESULT_TIE, 'info': match.result === RESULT_ABANDONED }">{{ match.unfavored.name }}</td>
-                                    <td v-highlight="match.finished" v-on:click="matchRevert(match)">{{ match.finished.toLocaleTimeString() }}</td>
+                                    <td v-highlight="match.finished" v-on:click="matchRevert(match)">{{ match.finished.toLocaleTimeString() }} <span class="caret"></span></td>
                                 </tr>
                             </tbody>
                         </table>

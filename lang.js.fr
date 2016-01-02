@@ -23,6 +23,7 @@ var locale = {
     competitorNameWhine: "Duplicate name provided.",
     competitorMatches: "Matchs",
     competitorRating: "Niveau",
+    competitorInitialRating: "Initial rating",
     competitorRatingPrompt: "Competitor's initial rating? (5-20)",
     competitorAdd: "Ajoutez concurrent",
     competitorAddMultiple: "Ajoute plusieur concurrents",
