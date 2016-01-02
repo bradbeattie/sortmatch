@@ -1,53 +1,53 @@
 var locale = {
     indexHeader: "Tournois avec SortMatch.ca",
-    indexAdd: "Lancer un tournoi nouveau",
+    indexAdd: "Débuter un nouveau tournoi",
     indexImport: "Importer un tournoi téléchargé",
-    indexFooter: "<p>This tool is provided to help you run tournaments (e.g. hockey, tennis, chess, <a href='http://www.spyparty.com/'>SpyParty</a>).</p>"
-          + "<p>The underlying tournament methodology is <a href='https://en.wikipedia.org/wiki/Glicko_rating_system'>Gicko2</a>, a system similar to <a href='https://en.wikipedia.org/wiki/Elo_rating_system'>Elo</a>.</p>"
-          + "<p>A competitor's rating is adjusted by how surprising the result of a match is.</p>"
-          + "<p>Tournaments are saved locally in your browser's cache and can be exported.</p>"
-          + "<p>You can stream results and facilitate conversations using services like <a href='http://www.twitch.tv/'>Twitch</a>.</p>"
-          + "<p>Feedback? Send me an email at <a href='mailto:bradbeattie@gmail.com'>bradbeattie@gmail.com</a>.</p>"
-          + "<p><a href='https://github.com/bradbeattie/sortmatch/blob/master/lang.js.fr'>Pouvez-vous m'aider traduire cette site?</a></p>"
+    indexFooter: "<p>Cet outil est fourni pour vous aider à lancer des tournois (ex: hockey, tennis, échecs, <a href='http://www.spyparty.com/'>SpyParty</a>).</p>"
+          + "<p>La méthodologie sous-jacente des tournois est <a href='https://fr.wikipedia.org/wiki/Classement_Glicko'>Gicko2</a>, un système similaire à <a href='https://fr.wikipedia.org/wiki/Classement_Elo'>Elo</a>.</p>"
+          + "<p>Une évaluation du concurrent est ajustée lorsque le résultat du match est surprenant.</p>"
+          + "<p>Les tournois sont sauvegardés localement dans le cache de votre navigateur et peuvent être exportés.</p>"
+          + "<p>Vous pouvez suivre le fil des résultats et faciliter les conversations en utilisant les services tel que <a href='http://www.twitch.tv/'>twitch</a>.</p>"
+          + "<p>Retour d'informations? Envoyer moi un email à <a href='mailto:bradbeattie@gmail.com'>bradbeattie@gmail.com</a>.</p>"
+          + "<p><a href='https://github.com/bradbeattie/sortmatch/blob/master/lang.js.fr'>Pouvez-vous m'aider à traduire cette site?</a></p>"
           + "<hr />"
-          + "<p>Remember, tournaments are for comparing competitors two at a time and declaring a winner.<br/>If you need a tool for creating elections, try <a href='https://modernballots.com'>ModernBallots.com</a> instead.</p>",
-    hintStart: "Start by adding at least 2 competitors",
-    hintBulkAdd: "You can competitors in bulk. Each line will be processed as a separate competitor. Duplicates will be ignored.",
-    hintContinueUntil: "Keep going until all competitors have completed at least 10 matches.",
-    hintPauseWhenDone: "When you're satisfied enough matches have taken place, pause matchmaking and finish the remaining matches.",
-    hintFinishRemaining: "Finish the remaining matches and declare the victor. Optionally, hold one final match between the top two competitors.",
-    cancel: "Cancel",
+          + "<p>Souvenez vous, Tournois est fait pour comparer deux concurrents à la fois et déclarer un vainqueur.<br />Si vous avez besoin d'un outil pour créer des élections, essayez plutôt <a href='https://modernballots.com'>ModernBallots.com</a> instead.</p>",
+    hintStart: "Débutez en ajoutant au moins 2 concurrents.",
+    hintBulkAdd: "Chaque ligne sera traitée comme un concurrent différent. Les doublons seront ignorés.",
+    hintContinueUntil: "Continuez jusqu'à ce que tous les concurrents aient accompli au moins 10 matchs.",
+    hintPauseWhenDone: "Lorsque vous êtes satisfait que suffisamment de matchs ont eu lieu, mettez en pause la mise en relation et terminez les matchs restants.",
+    hintFinishRemaining: "Terminez les matchs restants et déclarez le vainqueur. Eventuellement, maintenir un match final entre les deux premiers concurrents.",
+    cancel: "Annuler",
     competitors: "Concurrents",
     competitorName: "Nom",
     competitorNamePrompt: "Nom du concurrent?",
-    competitorNameWhine: "Duplicate name provided.",
+    competitorNameWhine: "Doublon de nom fourni.",
     competitorMatches: "Matchs",
-    competitorRating: "Niveau",
-    competitorInitialRating: "Initial rating",
-    competitorRatingPrompt: "Competitor's initial rating? (5-20)",
-    competitorAdd: "Ajoutez concurrent",
-    competitorAddMultiple: "Ajoute plusieur concurrents",
-    matchesRevertPrompt: "Do you want to undo this match's result and place it back into the pool of pending matches?",
-    matchesPending: "Matchs en Attente",
+    competitorRating: "Evaluation",
+    competitorInitialRating: "Evaluation initiale",
+    competitorRatingPrompt: "Evaluation initiale du concurrent? (5-20)",
+    competitorAdd: "Ajouter concurrent",
+    competitorAddMultiple: "Ajouter concurrents multiples",
+    matchesRevertPrompt: "Voulez vous annuler ce résultat de match et le placer dans la réserve de matchs en attente?",
+    matchesPending: "Matchs en attente",
     matchesMatched: "Planifié",
-    matchesFavored: "Favorisé",
+    matchesFavored: "Favori",
     matchesChallenger: "Adversaire",
-    matchesFinished: "Réalisé",
-    matchesRecord: "Enregistrez résultat",
-    matchesWin: "Win for",
-    matchesTie: "Tie",
-    matchesSkipped: "Match did not take place",
-    matchesCompleted: "Matchs Joués",
-    tournamentPause: "Pause matchmaking",
-    tournamentContinue: "Continue matchmaking",
-    tournamentNext: "Next matchmaking: ",
-    tournamentBenign: "Benign Actions",
-    tournamentExport: "Export tournament",
-    tournamentBanner: "Change banner",
-    tournamentBannerPrompt: "New banner URL?",
-    tournamentBannerWhine: "Banner URLs must start with `https://` or `http://` or be blank.",
-    tournamentDestructive: "Destructive Actions",
-    tournamentDelete: "Delete tournament",
-    tournamentDeleteConfirm: "Your tournament will not be recoverable. Are you sure you're okay with deleting this tournament?",
-    tournamentTitlePrompt: "Tournament title?"
+    matchesFinished: "Terminé",
+    matchesRecord: "Enregistrer résultat",
+    matchesWin: "Victoire pour",
+    matchesTie: "Match nul",
+    matchesSkipped: "Match n'a pas eu lieu",
+    matchesCompleted: "Matchs joués",
+    tournamentPause: "Pause mise en relation",
+    tournamentContinue: "Continuer mise en relation",
+    tournamentNext: "Prochaine mise en relation:",
+    tournamentBenign: "Actions bénignes",
+    tournamentExport: "Exporter tournoi",
+    tournamentBanner: "Changer bannière",
+    tournamentBannerPrompt: "Nouvelle bannière URL?",
+    tournamentBannerWhine: "Les bannières doivent commencer par `https://` ou `http://` ou être vides.",
+    tournamentDestructive: "Actions irréversibles",
+    tournamentDelete: "Effacer tournoi",
+    tournamentDeleteConfirm: "Votre tournoi ne sera pas récupérable. Etes vous sur de vouloir supprimer ce tournoi?",
+    tournamentTitlePrompt: "Titre du tournoi?",
 };

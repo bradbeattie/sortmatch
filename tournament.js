@@ -45,7 +45,7 @@ Vue.filter('round', function(value, decimals) {
 
 var tournamentNames = ["Example Tournament"];
 for (var key in localStorage) {
-    if (tournamentNames.hasOwnProperty(key) && key !== "length") {
+    if (localStorage.hasOwnProperty(key) && tournamentNames.indexOf(key) === -1) {
         tournamentNames.push(key);
     }
 }
@@ -55,7 +55,7 @@ var vue_data = {
     lang: locale,
     tournamentNames: tournamentNames,
     name: URI_KEY,
-    banner: "https://sortmatch.ca/banner.jpg",
+    banner: null,
     ranking: new glicko2.Glicko2(),
     started: new Date(),
     pageLoad: new Date(),
@@ -74,6 +74,9 @@ var vue_data = {
 function objectToJSON(obj) {
     var replacerCache = [];
     return JSON.stringify(obj, function(key, value) {
+        if (typeof value === 'object' && value !== null && value.hasOwnProperty("__rating")) {
+            return null;
+        }
         if (typeof value === 'object' && value !== null) {
             if (replacerCache.indexOf(value) !== -1) {
                 return "jsonid:"+replacerCache.indexOf(value);
@@ -89,11 +92,13 @@ function jsonToObject(json) {
     var parsed = JSON.parse(json, function(k, v) {
         if (v === null) {
             return v;
-        } else if (typeof v === "object" && v.__rating !== undefined) {
-            rating = vue_data.ranking.makePlayer();
-            for (var k in v) rating[k] = v[k];
-            return rating;
-        } else if (typeof v === "object" && v.jsonid !== undefined) {
+        }
+
+        if (typeof v === "object" && v.initialRating !== undefined) {
+            v.ranking = vue_data.ranking.makePlayer();
+        }
+
+        if (typeof v === "object" && v.jsonid !== undefined) {
             reviverCache[v.jsonid] = v;
             delete v.jsonid;
         } else if (typeof v === "string" && v.endsWith("Z") && Date.parse(v)) {
@@ -186,13 +191,9 @@ var vue = new Vue({
         },
         tournamentExport() {
             tournamentSave();
-            parsed = jsonToObject(localStorage[URI_KEY]);
-            parsed.competitors.forEach(function(competitor, index) {
-                delete competitor.ranking;
-            });
             saveAs(
                 new Blob(
-                    [objectToJSON(parsed)],
+                    [localStorage[URI_KEY]],
                     {type: "application/json;charset=utf-8"}
                 ),
                 URI_KEY + " (" + (new Date()).toISOString().split(".")[0].replace(/[^0-9]/g, "-") + ").json"
@@ -395,6 +396,7 @@ setInterval(function() {
 
 // If the tournament is named "Example Tournament", run the demo
 if (vue.name == "Example Tournament" && !vue.competitors.length) {
+    vue.banner = "https://sortmatch.ca/banner.jpg";
     var competitors = {
         "Montreal Canadiens": 110,
         "Tampa Bay Lightning" :108,
