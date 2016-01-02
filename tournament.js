@@ -226,7 +226,8 @@ var vue = new Vue({
                     initialRating: vue.ranking._default_rating,
                     ranking: vue.ranking.makePlayer(vue.ranking._default_rating, vue.ranking._default_rd, vue.ranking._default_vol),
                     matches: [],
-                    matched: false
+                    matched: false,
+                    paused: false
                 });
                 planMatches();
                 tournamentSave();
@@ -239,6 +240,10 @@ var vue = new Vue({
                 }
             });
             $("#competitor-add-multiple").modal("hide");
+        },
+        competitorPause(competitor) {
+            competitor.paused = !competitor.paused;
+            tournamentSave();
         },
         competitorInitialRatingChange(competitor) {
             var initialRating = parseInt(prompt(vue.lang.competitorRatingPrompt, competitor.initialRating / 100) * 100) || competitor.initialRating;
@@ -328,7 +333,7 @@ function planMatches() {
     var any_planned = false;
     while (true) {
         var unassigned = vue.competitors.filter(function(competitor) {
-            return competitor.matches.filter(function(match) {
+            return !competitor.paused && competitor.matches.filter(function(match) {
                 return match.finished === null;
             }).length === 0;
         });
@@ -415,7 +420,8 @@ if (vue.name == "Example Tournament" && !vue.competitors.length) {
             initialRating: initialRating,
             ranking: vue.ranking.makePlayer(initialRating, vue.ranking._default_rd, vue.ranking._default_vol),
             matches: [],
-            matched: false
+            matched: false,
+            paused: false
         });
     }
     setTimeout(planMatches, 1300);
