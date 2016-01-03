@@ -265,28 +265,6 @@ var vue = new Vue({
     }
 });
 
-
-function suitability(considering, competitor) {
-    var rating_difference = Math.abs(considering.ranking.getRating() - competitor.ranking.getRating());
-    var average_matches_global = vue.matches.length * 2 / vue.competitors.length;
-    var average_matches_local = Math.min(considering.matches.length, competitor.matches.length);
-    var recently_matched_penalties = [0];
-    competitor.matches.slice(-7).reverse().map(function(match, index) {
-        if (match.favored === considering && match.unfavored === competitor || match.favored === competitor && match.unfavored === considering) {
-            recently_matched_penalties.push(300 / (index + 1));
-        }
-    });
-    considering.matches.slice(-7).reverse().map(function(match, index) {
-        if (match.favored === considering && match.unfavored === competitor || match.favored === competitor && match.unfavored === considering) {
-            recently_matched_penalties.push(300 / (index + 1));
-        }
-    });
-    var recently_matched_penalty = Math.max.apply(null, recently_matched_penalties);
-    result = (rating_difference) * ((average_matches_local + 1) / (average_matches_global + 1.001)) + recently_matched_penalty;
-    return result;
-}
-
-
 /* Using the initially provided ratings, follow https://github.com/mmai/glicko2js#when-to-update-rankings
  * and regenerate each player's new rating from the start with the results provided thus far. */
 function regenerateRatings() {
@@ -330,51 +308,57 @@ function planMatches() {
     planMatchesTimeout = setTimeout(planMatches, delay * 1000);
 
     // Pair up available competitors
-    var considered = [];
     var any_planned = false;
     while (true) {
-        var unassigned = vue.competitors.filter(function(competitor) {
+
+        // Filter down on active candidates without pending matches
+        var pairable = vue.competitors.filter(function(competitor) {
             return !competitor.paused && competitor.matches.filter(function(match) {
                 return match.finished === null;
             }).length === 0;
         });
-        var viable = unassigned.filter(function(competitor) {
-            return considered.indexOf(competitor) === -1;
-        });
-        if (viable.length < 2) {
+        if (pairable.length < 2) {
             break;
         }
 
-        var considering = viable.sort(function(a, b) {
-            return a.matches.length - b.matches.length + (Math.random() - 0.5) * 2;
-        })[0];
-        considered.push(considering);
-        var excluded = considered.filter(function(x) { return true; });
-
-        // Strict set of candidates that could ever possibly be considered
-        var pairable = unassigned.filter(function(competitor) {
-            return excluded.indexOf(competitor) === -1 && suitability(considering, competitor) < 200 + 1000 * Math.pow(unassigned.length / vue.competitors.length, 1.5);
-        }).sort(function(a, b) {
-            return suitability(considering, a) - suitability(considering, b) + (Math.random() - 0.5) * 50;
+        // Filter viable to least matches, and select the one with the highest score
+        var fewest_matches = Math.min.apply(
+            null,
+            pairable.map(function(competitor, index) {
+                return competitor.matches.length;
+            })
+        );
+        var competitors_with_fewest_matches = pairable.filter(function(competitor) {
+            return competitor.matches.length == fewest_matches
         });
+        var considering = competitors_with_fewest_matches.sort(function(a, b) {
+            return b.ranking.getRating() - a.ranking.getRating() + (Math.random() - 0.5) * 0.01 // Random for tie breakers
+        })[0];
 
-        if (pairable.length) {
-            var pairing = pairable[0];
-            var considering_is_greater = considering.ranking.getRating() > pairing.ranking.getRating();
-            var match = {
-                favored: considering_is_greater ? considering : pairing,
-                unfavored: considering_is_greater ? pairing : considering,
-                start: new Date(),
-                result: null,
-                finished: null
-            };
-            considering.matches.push(match);
-            considering.matched = true;
-            pairing.matches.push(match);
-            pairing.matched = true;
-            vue.matches.push(match);
-            any_planned = true;
-        }
+        // Pair with the viable candidate with the closest rating
+        var pairing = pairable.filter(function(competitor) {
+            return competitor !== considering
+        }).sort(function(a, b) {
+            return Math.abs(a.ranking.getRating() - considering.ranking.getRating())
+                 - Math.abs(b.ranking.getRating() - considering.ranking.getRating())
+                 + (Math.random() - 0.5) * 0.01; // Random for tie breakers
+        })[0];
+
+        // Now that we have a pair, create a match
+        var considering_is_greater = considering.ranking.getRating() > pairing.ranking.getRating();
+        var match = {
+            favored: considering_is_greater ? considering : pairing,
+            unfavored: considering_is_greater ? pairing : considering,
+            start: new Date(),
+            result: null,
+            finished: null
+        };
+        considering.matches.push(match);
+        considering.matched = true;
+        pairing.matches.push(match);
+        pairing.matched = true;
+        vue.matches.push(match);
+        any_planned = true;
     }
 
     if (any_planned) {
