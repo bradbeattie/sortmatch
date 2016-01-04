@@ -161,7 +161,23 @@ var vue = new Vue({
             });
         },
         setCountdown() {
+            var old_status = vue.countdownActive;
             vue.countdownActive = (vue.getPairable().length / vue.competitors.length > 0.6);
+
+            // If countdownActive has been switched on, reset the countdown timer
+            if (!old_status && vue.countdownActive) {
+                var durations = vue.matches.map(function(match) {
+                    return (match.finished ? match.finished : new Date()) - match.start
+                });
+                if (durations.length) {
+                    var sum = durations.reduce(function(a, b) { return a + b; });
+                    var avg = sum / durations.length;
+                    var delay = 30 + Math.pow(avg / 60000, 0.5) * 60;
+                } else {
+                    var delay = 30;
+                }
+                vue.countdown = parseInt(delay);
+            }
         },
         matchResolve(match, result) {
             match.result = result;
@@ -300,19 +316,6 @@ function planMatches() {
     if (vue.paused) {
         return;
     }
-
-    // Decide when to next call planMatches
-    var durations = vue.matches.map(function(match) {
-        return (match.finished ? match.finished : new Date()) - match.start
-    });
-    if (durations.length) {
-        var sum = durations.reduce(function(a, b) { return a + b; });
-        var avg = sum / durations.length;
-        var delay = 30 + Math.pow(avg / 60000, 0.5) * 60;
-    } else {
-        var delay = 30;
-    }
-    vue.countdown = parseInt(delay);
 
     // Pair up available competitors
     var any_planned = false;
