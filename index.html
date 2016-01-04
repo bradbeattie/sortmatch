@@ -114,7 +114,7 @@
                                             </label>
                                             <label class="btn btn-sm btn-default" v-bind:class="{ 'active': !paused }">
                                                 <input type="radio" v-bind:value="false" v-model="paused">
-                                                <span v-if="paused">
+                                                <span v-if="paused || !countdownActive">
                                                     <span class="glyphicon glyphicon-play"></span> {{ lang.tournamentContinue }}
                                                 </span>
                                                 <span v-else>

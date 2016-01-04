@@ -61,6 +61,7 @@ var vue_data = {
     pageLoad: new Date(),
     competitors: [],
     countdown: 0,
+    countdownActive: false,
     matches: [],
     paused: false,
     RESULT_FAVORED: RESULT_FAVORED,
@@ -152,21 +153,28 @@ var vue = new Vue({
         }
     },
     methods: {
+        getPairable() {
+            return pairable = vue.competitors.filter(function(competitor) {
+                return !competitor.paused && competitor.matches.filter(function(match) {
+                    return match.finished === null;
+                }).length === 0;
+            });
+        },
+        setCountdown() {
+            vue.countdownActive = (vue.getPairable().length / vue.competitors.length > 0.6);
+        },
         matchResolve(match, result) {
             match.result = result;
             match.finished = new Date();
             match.favored.matched = false;
             match.unfavored.matched = false;
             regenerateRatings();
-            var assigned = vue.competitors.filter(function(competitor) {
-                return competitor.matches.filter(function(match) {
-                    return match.finished === null;
-                }).length !== 0;
-            });
-            if (assigned.length <= 1) {
+            if (vue.getPairable().length >= (vue.competitors.length - 1)) {
                 planMatches();
+            } else {
+                vue.setCountdown();
+                tournamentSave();
             }
-            tournamentSave();
         },
         matchRevert(match) {
             if (confirm(vue.lang.matchesRevertPrompt)) {
@@ -286,7 +294,6 @@ function regenerateRatings() {
 }
 
 
-var planMatchesTimeout = null;
 function planMatches() {
 
     // Just bail if we're paused
@@ -295,8 +302,9 @@ function planMatches() {
     }
 
     // Decide when to next call planMatches
-    clearTimeout(planMatchesTimeout);
-    var durations = vue.matches.map(function(match) { return (match.finished ? match.finished : new Date()) - match.start });
+    var durations = vue.matches.map(function(match) {
+        return (match.finished ? match.finished : new Date()) - match.start
+    });
     if (durations.length) {
         var sum = durations.reduce(function(a, b) { return a + b; });
         var avg = sum / durations.length;
@@ -305,7 +313,6 @@ function planMatches() {
         var delay = 30;
     }
     vue.countdown = parseInt(delay);
-    planMatchesTimeout = setTimeout(planMatches, delay * 1000);
 
     // Pair up available competitors
     var any_planned = false;
@@ -363,6 +370,7 @@ function planMatches() {
 
     if (any_planned) {
         tournamentSave();
+        vue.setCountdown();
     }
 }
 
@@ -374,7 +382,12 @@ planMatches();
 
 // Decrement the vue countdown every second (is there a better way to implement a vue.js-compatible timer?)
 setInterval(function() {
-    vue.countdown = Math.max(0, vue.countdown - 1);
+    if (!vue.paused && vue.countdownActive) {
+        vue.countdown = Math.max(0, vue.countdown - 1);
+        if (vue.countdown < 1) {
+            planMatches();
+        }
+    }
 }, 1000);
 
 
