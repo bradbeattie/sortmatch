@@ -26,7 +26,8 @@ Vue.filter('matchesCompleted', function(competitor) {
 
 Vue.filter('favoredOrder', function(matches) {
     return matches.sort(function(a, b) {
-        return b.favored.ranking.getRating() - a.favored.ranking.getRating();
+        return b.favored.ranking.getRating() - a.favored.ranking.getRating()
+             + b.unfavored.ranking.getRating() - a.unfavored.ranking.getRating();
     });
 })
 
@@ -322,8 +323,11 @@ function planMatches() {
     while (true) {
 
         // Filter down on active candidates without pending matches
-        var pairable = vue.competitors.filter(function(competitor) {
-            return !competitor.paused && competitor.matches.filter(function(match) {
+        var active = vue.competitors.filter(function(competitor) {
+            return !competitor.paused;
+        });
+        var pairable = active.filter(function(competitor) {
+            return competitor.matches.filter(function(match) {
                 return match.finished === null;
             }).length === 0;
         });
