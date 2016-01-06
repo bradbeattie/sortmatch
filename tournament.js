@@ -10,18 +10,35 @@ Vue.directive('highlight', function() {
 });
 
 
+function competitorToClass(competitor) {
+    if (competitor.paused) return "danger";
+    else if (competitor.matches.length > 2) {
+        var rating = competitor.ranking.getRating();
+        if (rating > 1600) return "warning";
+        else if (rating > 1400) return "info";
+    }
+    return "primary";
+}
+Vue.filter('competitorToClass', competitorToClass);
+Vue.filter('competitorToProgressBarClass', function(competitor) {
+    var response = "progress-bar-" + competitorToClass(competitor);
+    if (competitor.matched) response += " progress-bar-striped active";
+    return response;
+});
+
+
 Vue.filter('finished', function(matches, finished) {
     return matches.filter(function(match, index) {
         return match.finished && finished || !match.finished && !finished;
     });
-})
+});
 
 
 Vue.filter('matchesCompleted', function(competitor) {
     return competitor.matches.filter(function(match, index) {
         return match.finished && match.result !== RESULT_ABANDONED;
     }).length;
-})
+});
 
 
 Vue.filter('favoredOrder', function(matches) {
@@ -29,7 +46,7 @@ Vue.filter('favoredOrder', function(matches) {
         return b.favored.ranking.getRating() - a.favored.ranking.getRating()
              + b.unfavored.ranking.getRating() - a.unfavored.ranking.getRating();
     });
-})
+});
 
 
 Vue.filter('round', function(value, decimals) {
