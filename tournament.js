@@ -367,6 +367,8 @@ function planMatches() {
             result: null,
             finished: null
         };
+        match.favoredRating = match.favored.ranking.getRating();
+        match.unfavoredRating = match.unfavored.ranking.getRating();
         considering.matches.push(match);
         considering.matched = true;
         pairing.matches.push(match);
