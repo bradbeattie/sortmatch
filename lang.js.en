@@ -27,6 +27,7 @@ var locale = {
     competitorRatingPrompt: "Competitor's initial rating? (5-20)",
     competitorAdd: "Add competitor",
     competitorAddMultiple: "Add multiple competitors",
+    matchesAdd: "Add match",
     matchesRevertPrompt: "Do you want to undo this match's result and place it back into the pool of pending matches?",
     matchesPending: "Pending matches",
     matchesMatched: "Matched",

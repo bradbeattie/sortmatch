@@ -27,6 +27,7 @@ var locale = {
     competitorRatingPrompt: "¿Clasificación inicial del competidor? (5-20)",
     competitorAdd: "Añadir competidor",
     competitorAddMultiple: "Añadir múltiples competidores",
+    matchesAdd: "Añadir partido",
     matchesRevertPrompt: "¿Quiere deshacer el resultado de este partido y devolverlo a la lista de partidos pendientes?",
     matchesPending: "Partidos Pendientes",
     matchesMatched: "Jugados",

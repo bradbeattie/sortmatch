@@ -27,6 +27,7 @@ var locale = {
     competitorRatingPrompt: "Evaluation initiale du concurrent? (5-20)",
     competitorAdd: "Ajouter concurrent",
     competitorAddMultiple: "Ajouter concurrents multiples",
+    matchesAdd: "Ajouter match",
     matchesRevertPrompt: "Voulez vous annuler ce résultat de match et le placer dans la réserve de matchs en attente?",
     matchesPending: "Matchs en attente",
     matchesMatched: "Planifié",

@@ -27,6 +27,7 @@ var locale = {
     competitorRatingPrompt: "Erst-Bewertung vom Gegner? (5-20)",
     competitorAdd: "Gegner hinzufügen",
     competitorAddMultiple: "Mehrere Gegner hinzufügen",
+    matchesAdd: "Spiel hinzufügen",
     matchesRevertPrompt: "Möchtest du dieses Spielergebnis rückgängig machen und es in den Spieleinsatz der ausstehenden Spiele setzen?",
     matchesPending: "Ausstehende Spiele",
     matchesMatched: "Gespielt",
