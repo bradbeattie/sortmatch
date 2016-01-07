@@ -137,11 +137,36 @@
                                                 <li class="dropdown-header">{{ lang.tournamentBenign }}</li>
                                                 <li><a href="#" v-on:click="tournamentExport">{{ lang.tournamentExport }}</a>
                                                 <li><a href="#" v-on:click="bannerChange">{{ lang.tournamentBanner }}</a>
+                                                <li><a href="#" data-toggle="modal" data-target="#match-add">{{ lang.matchesAdd }}</a>
                                                 <li role="separator" class="divider"></li>
                                                 <li class="dropdown-header">{{ lang.tournamentDestructive }}</li>
                                                 <li><a href="#" v-on:click="tournamentDelete">{{ lang.tournamentDelete }}</a>
                                             </ul>
                                         </span>
+                                        <div class="modal fade" id="match-add" tabindex="-1" role="dialog">
+                                            <div class="modal-dialog">
+                                                <div class="modal-content">
+                                                    <div class="modal-body">
+                                                        <div class="row">
+                                                            <div class="col-sm-6">
+                                                                <select class="form-control" id="match-add-left">
+                                                                    <option v-for="competitor in competitors | orderBy '(paused ? 0 : 10000) + ranking.getRating()' -1">{{ competitor.name }}</option>
+                                                                </select>
+                                                            </div>
+                                                            <div class="col-sm-6">
+                                                                <select class="form-control" id="match-add-right">
+                                                                    <option v-for="competitor in competitors | orderBy '(paused ? 0 : 10000) + ranking.getRating()' -1">{{ competitor.name }}</option>
+                                                                </select>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn btn-default" data-dismiss="modal">{{ lang.cancel }}</button>
+                                                        <button type="button" class="btn btn-success" v-on:click="matchAdd">{{ lang.matchesAdd }}</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </td>
                                 </tr>
                             </tfoot>

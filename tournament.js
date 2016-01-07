@@ -200,8 +200,12 @@ var vue = new Vue({
         matchResolve(match, result) {
             match.result = result;
             match.finished = new Date();
-            match.favored.matched = false;
-            match.unfavored.matched = false;
+            match.favored.matched = match.favored.matches.filter(function(match) {
+                return match.finished === null;
+            }).length > 0;
+            match.unfavored.matched = match.unfavored.matches.filter(function(match) {
+                return match.finished === null;
+            }).length > 0;
             regenerateRatings();
             if (vue.getPairable().length >= (vue.competitors.length - 1)) {
                 planMatches();
@@ -216,6 +220,15 @@ var vue = new Vue({
                 match.finished = null;
                 regenerateRatings();
             }
+        },
+        matchAdd() {
+            var name_left = $("#match-add-left").val();
+            var name_right = $("#match-add-right").val();
+            var considering = vue.competitors.filter(function(competitor) { return competitor.name == name_left; })[0];
+            var pairing = vue.competitors.filter(function(competitor) { return competitor.name == name_right; })[0];
+            makeMatch(considering, pairing);
+            tournamentSave();
+            $("#match-add").modal("hide");
         },
         matchDeleteAll() {
             vue.competitors.forEach(function(competitor, index) {
@@ -402,27 +415,34 @@ function planMatches() {
         }
 
         // Now that we have a pair, create a match
-        var considering_is_greater = considering.ranking.getRating() > pairing.ranking.getRating();
-        var match = {
-            favored: considering_is_greater ? considering : pairing,
-            unfavored: considering_is_greater ? pairing : considering,
-            start: new Date(),
-            result: null,
-            finished: null
-        };
-        match.favoredRating = match.favored.ranking.getRating();
-        match.unfavoredRating = match.unfavored.ranking.getRating();
-        considering.matches.push(match);
-        considering.matched = true;
-        pairing.matches.push(match);
-        pairing.matched = true;
-        vue.matches.push(match);
+        makeMatch(considering, pairing);
         any_planned = true;
     }
 
     if (any_planned) {
         tournamentSave();
         vue.setCountdown();
+    }
+}
+
+
+function makeMatch(a, b) {
+    if (a !== b) {
+        var a_is_greater = a.ranking.getRating() > b.ranking.getRating();
+        var match = {
+            favored: a_is_greater ? a : b,
+            unfavored: a_is_greater ? b : a,
+            start: new Date(),
+            result: null,
+            finished: null
+        };
+        match.favoredRating = match.favored.ranking.getRating();
+        match.unfavoredRating = match.unfavored.ranking.getRating();
+        a.matches.push(match);
+        a.matched = true;
+        b.matches.push(match);
+        b.matched = true;
+        vue.matches.push(match);
     }
 }
 
