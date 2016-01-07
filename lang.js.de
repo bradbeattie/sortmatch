@@ -13,7 +13,7 @@ var locale = {
           + "<p>Zur Erinnerung, Turniere sind dafür da, um zwei Teilnehmer zur gleichen Zeit zu vergleichen und einen Gewinner zu ermitteln.<br/>Wenn du ein Tool brauchst, um Abstimmungen zu erstellen, versuche stattdessen <a href='https://modernballots.com'>ModernBallots.com</a>.</p>",
     hintStart: "Beginne, indem du zunächst zwei Gegner hinzufügst.",
     hintBulkAdd: "Jede einzelne Zeile wird als separater Gegner angezeigt. Doppelte werden ignoriert.",
-    hintContinueUntil: "Fahre fort bis alle Gegner mindestens 10 Spiele abgeschlossen haben.",
+    hintContinueUntil: "Fahre fort bis alle Gegner mindestens 7 Spiele abgeschlossen haben.",
     hintPauseWhenDone: "Wenn du mit den stattgefundenen Spielen zufrieden genug bist, pausiere die Spielsitzung und beende die restlichen Spiele.",
     hintFinishRemaining: "Beende die restlichen Spiele und erkläre den Gewinner. Spiele nach Belieben ein Finale zwischen den beiden besten Gegnern.",
     cancel: "Abbrechen",

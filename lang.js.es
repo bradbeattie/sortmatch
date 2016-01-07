@@ -13,7 +13,7 @@ var locale = {
           + "<p>Recuerde, los torneos son para comparar competidores, de dos en dos, y declarar un ganador.<br/>Si necesita una herramienta para hacer selecciones, pruebe mejor <a href='https://modernballots.com'>ModernBallots.com</a>.</p>",
     hintStart: "Empiece añadiendo al menos 2 competidores.",
     hintBulkAdd: "Cada línea será procesada como un competidor separado. Se ignorarán los duplicados.",
-    hintContinueUntil: "Siga repitiendo los pasos hasta que todos los competidores hayan completado al menos 10 partidos.",
+    hintContinueUntil: "Siga repitiendo los pasos hasta que todos los competidores hayan completado al menos 7 partidos.",
     hintPauseWhenDone: "Cuando esté satisfecho con el número de partidos jugados, pause el emparejador y finalice los partidos restantes.",
     hintFinishRemaining: "Finalice los partidos restantes y declare un vencedor. Opcionalmente, puede llevar a cabo un partido final entre los dos competidores que encabecen la lista.",
     cancel: "Cancelar",

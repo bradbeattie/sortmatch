@@ -13,7 +13,7 @@ var locale = {
           + "<p>Remember, tournaments are for comparing competitors two at a time and declaring a winner.<br/>If you need a tool for creating elections, try <a href='https://modernballots.com'>ModernBallots.com</a> instead.</p>",
     hintStart: "Start by adding at least 2 competitors.",
     hintBulkAdd: "Each line will be processed as a separate competitor. Duplicates will be ignored.",
-    hintContinueUntil: "Keep going until all competitors have completed at least 10 matches.",
+    hintContinueUntil: "Keep going until all competitors have completed at least 7 matches.",
     hintPauseWhenDone: "When you're satisfied enough matches have taken place, pause the matchmaking and finish the remaining matches.",
     hintFinishRemaining: "Finish the remaining matches and declare the victor. Optionally, hold one final match between the top two competitors.",
     cancel: "Cancel",
