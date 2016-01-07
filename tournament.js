@@ -12,7 +12,7 @@ Vue.directive('highlight', function() {
 
 function competitorToClass(competitor) {
     if (competitor.paused) return "danger";
-    else if (competitor.matches.length > 2) {
+    else if (matchesCompleted(competitor) > 1) {
         var rating = competitor.ranking.getRating();
         if (rating > 1600) return "warning";
         else if (rating > 1300) return "info";
@@ -33,12 +33,12 @@ Vue.filter('finished', function(matches, finished) {
     });
 });
 
-
-Vue.filter('matchesCompleted', function(competitor) {
+function matchesCompleted(competitor) {
     return competitor.matches.filter(function(match, index) {
         return match.finished && match.result !== RESULT_ABANDONED;
     }).length;
-});
+}
+Vue.filter('matchesCompleted', matchesCompleted);
 
 
 Vue.filter('favoredOrder', function(matches) {
