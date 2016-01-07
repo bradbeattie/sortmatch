@@ -15,7 +15,7 @@ function competitorToClass(competitor) {
     else if (competitor.matches.length > 2) {
         var rating = competitor.ranking.getRating();
         if (rating > 1600) return "warning";
-        else if (rating > 1400) return "info";
+        else if (rating > 1300) return "info";
     }
     return "primary";
 }
@@ -337,43 +337,69 @@ function planMatches() {
 
     // Pair up available competitors
     var any_planned = false;
+    var active = vue.competitors.filter(function(competitor) {
+        return !competitor.paused;
+    });
     while (true) {
 
         // Filter down on active candidates without pending matches
-        var active = vue.competitors.filter(function(competitor) {
-            return !competitor.paused;
-        });
         var pairable = active.filter(function(competitor) {
             return competitor.matches.filter(function(match) {
                 return match.finished === null;
             }).length === 0;
         });
+
+        // If we don't have enough pairable candidates, stop
         if (pairable.length < 2) {
             break;
         }
 
-        // Filter viable to least matches, and select the one with the highest score
-        var fewest_matches = Math.min.apply(
-            null,
-            pairable.map(function(competitor, index) {
-                return competitor.matches.length;
-            })
-        );
-        var competitors_with_fewest_matches = pairable.filter(function(competitor) {
-            return competitor.matches.length == fewest_matches
-        });
-        var considering = competitors_with_fewest_matches.sort(function(a, b) {
-            return b.ranking.getRating() - a.ranking.getRating() + (Math.random() - 0.5) * 0.01 // Random for tie breakers
-        })[0];
+        // If we only have two, just select them outright
+        else if (pairable.length === 2) {
+            considering = pairable[0];
+            pairing = pairable[1];
+        }
 
-        // Pair with the viable candidate with the closest rating
-        var pairing = pairable.filter(function(competitor) {
-            return competitor !== considering
-        }).sort(function(a, b) {
-            return Math.abs(a.ranking.getRating() - considering.ranking.getRating())
-                 - Math.abs(b.ranking.getRating() - considering.ranking.getRating())
-                 + (Math.random() - 0.5) * 0.01; // Random for tie breakers
-        })[0];
+        // Otherwise filter viable to least matches, and select the one with the highest score
+        else {
+            var fewest_matches = Math.min.apply(
+                null,
+                pairable.map(function(competitor, index) {
+                    return competitor.matches.length;
+                })
+            );
+            var competitors_with_fewest_matches = pairable.filter(function(competitor) {
+                return competitor.matches.length == fewest_matches
+            });
+            var considering = competitors_with_fewest_matches.sort(function(a, b) {
+                return b.ranking.getRating() - a.ranking.getRating() + (Math.random() - 0.5) * 0.01 // Random for tie breakers
+            })[0];
+
+            // If there are only four or fewer active candidates, just use round-robin
+            if (active.length <= 4) {
+                var opponent_history = considering.matches.map(function(match) {
+                    return (match.favored === considering) ? match.unfavored : match.favored;
+                });
+                var pairing = pairable.filter(function(competitor) {
+                    return competitor !== considering
+                }).sort(function(a, b) {
+                    console.log(considering.name, a.name, opponent_history.lastIndexOf(a), b.name, opponent_history.lastIndexOf(b));
+                    return opponent_history.lastIndexOf(a) - opponent_history.lastIndexOf(b)
+                         + (Math.random() - 0.5) * 0.01; // Random for tie breakers
+                })[0];
+            }
+
+            // Otherwise pair with the viable candidate with the closest rating
+            else {
+                var pairing = pairable.filter(function(competitor) {
+                    return competitor !== considering
+                }).sort(function(a, b) {
+                    return Math.abs(a.ranking.getRating() - considering.ranking.getRating())
+                         - Math.abs(b.ranking.getRating() - considering.ranking.getRating())
+                         + (Math.random() - 0.5) * 0.01; // Random for tie breakers
+                })[0];
+            }
+        }
 
         // Now that we have a pair, create a match
         var considering_is_greater = considering.ranking.getRating() > pairing.ranking.getRating();
