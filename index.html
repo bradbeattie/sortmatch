@@ -25,7 +25,7 @@
             <div id="detail" v-if="name" v-cloak>
                 <p v-if="banner"><img v-on:click="bannerChange" src="{{ banner }}" /></p>
                 <div class="row">
-                    <div class="col-sm-4" v-bind:class="{ 'col-sm-offset-4': !matches.length, 'sliding-transition': matches.length }">
+                    <div class="col-md-4" v-bind:class="{ 'col-md-offset-4': !matches.length, 'sliding-transition': matches.length }">
                         <h2>{{ lang.competitors }}</h2>
                         <p v-if="competitors.length < 2">{{ lang.hintStart }}</p>
                         <table v-bind:class="{ 'table': competitors.length, 'unstyled': !competitors.length }">
@@ -49,11 +49,11 @@
                                         </span>
                                     </td>
                                     <td v-highlight="competitor.matches.length" v-bind:class="{ 'text-muted': competitor.paused }">{{ competitor | matchesCompleted }}</td>
-                                    <td v-highlight="competitor.ranking.getRating()" title="{{ competitor.ranking.getRating() / 100 | round '2' }}">
+                                    <td v-highlight="competitor.ranking.getRating()" title="{{ Math.max(100, competitor.ranking.getRating()) / 100 | round '2' }}">
                                         <div class="progress">
-                                            <div class="progress-bar {{ competitor | competitorToProgressBarClass }}" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: {{ Math.max(20, competitor.ranking.getRating() / 20) }}%;">
-                                                <span v-if="competitor.ranking.getRating() >= 1400">{{ competitor.ranking.getRating() / 100 | round '1' }}</span>
-                                                <span v-else>{{ competitor.ranking.getRating() / 100 | round '0' }}</span>
+                                            <div class="progress-bar {{ competitor | competitorToProgressBarClass }}" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: {{ Math.min(100, Math.max(20, competitor.ranking.getRating() / 20)) }}%;">
+                                                <span v-if="competitor.ranking.getRating() >= 1300">{{ Math.max(100, competitor.ranking.getRating()) / 100 | round '1' }}</span>
+                                                <span v-else>{{ Math.max(100, competitor.ranking.getRating()) / 100 | round '0' }}</span>
                                             </div>
                                         </div>
                                     </td>
@@ -85,7 +85,7 @@
                             </tfoot>
                         </table>
                     </div>
-                    <div class="col-sm-8" v-if="matches.length" transition="delayedfade">
+                    <div class="col-md-8" v-if="matches.length" transition="delayedfade">
                         <h2 v-if="matches.length">{{ lang.matchesPending }}</h2>
                         <table class="table">
                             <thead>
