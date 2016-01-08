@@ -6,7 +6,7 @@ var URI_KEY = decodeURIComponent(location.search.substring(1).split("&")[0]);
 
 
 Vue.directive('highlight', function() {
-    $(this.el).stop(true).animate({backgroundColor: "hsl(30, 100%, 50%)"}).animate({backgroundColor: "hsl(30, 100%, 75%)"}).animate({backgroundColor: "hsl(30, 0%, 90%)"}, 30000).animate({backgroundColor: "transparent"}, 60000);
+    $(this.el).stop(true).animate({backgroundColor: "hsl(30, 100%, 75%)"}).animate({backgroundColor: "transparent"}, 10000);
 });
 
 
@@ -541,7 +541,7 @@ function(x) {
         var name = $(this).text().trim();
         $(".competitor").filter(function() {
             return $(this).text().trim() === name;
-        }).addClass("competitor-hover");
+        }).closest("tr").addClass("competitor-hover");
     }
 });
 

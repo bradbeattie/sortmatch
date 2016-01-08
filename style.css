@@ -24,6 +24,7 @@ td > div { border-radius: 1em; }
 .delayedfade-transition { -webkit-transition: all 1s ease 1s; transition: all 1s ease 1s; }
 .delayedfade-enter, .delayedfade-leave { opacity: 0; }
 .caret, .dropdown { cursor: pointer; }
-.competitor-hover { font-weight: bold; text-shadow: 0 0 1em yellow; }
+.competitor-hover td { background: #d9edf7 !important; }
+.table .success { font-weight: bold; }
 #competitor-add-multiple p { text-align: left; }
 #competitor-add-multiple textarea { height: 20em; }
