@@ -6,7 +6,7 @@ var locale = {
           + "<p>La méthodologie sous-jacente des tournois est <a href='https://fr.wikipedia.org/wiki/Classement_Glicko'>Gicko2</a>, un système similaire à <a href='https://fr.wikipedia.org/wiki/Classement_Elo'>Elo</a>.</p>"
           + "<p>Une évaluation du concurrent est ajustée lorsque le résultat du match est surprenant.</p>"
           + "<p>Les tournois sont sauvegardés localement dans le cache de votre navigateur et peuvent être exportés.</p>"
-          + "<p>Vous pouvez suivre le fil des résultats et faciliter les conversations en utilisant les services tel que <a href='http://www.twitch.tv/'>twitch</a>.</p>"
+          + "<p>Vous pouvez suivre le fil des résultats et faciliter les conversations en utilisant les services tel que <a href='http://www.twitch.tv/'>Twitch</a>.</p>"
           + "<p>Retour d'informations? Envoyer moi un email à <a href='mailto:bradbeattie@gmail.com'>bradbeattie@gmail.com</a>.</p>"
           + "<p><a href='https://github.com/bradbeattie/sortmatch/blob/master/lang.js.fr'>Pouvez-vous m'aider à traduire cette site?</a></p>"
           + "<hr />"
