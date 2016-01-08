@@ -23,7 +23,7 @@
     <body>
         <div class="container theme-showcase" role="main" id="vue-app">
             <div id="detail" v-if="name" v-cloak>
-                <p v-if="banner"><img v-on:click="bannerChange" src="{{ banner }}" /></p>
+                <p v-if="banner"><img v-on:click="bannerChange" v-bind:src="banner" /></p>
                 <div class="row">
                     <div class="col-md-4" v-bind:class="{ 'col-md-offset-4': !matches.length, 'sliding-transition': matches.length }">
                         <h2>{{ lang.competitors }}</h2>
