@@ -541,7 +541,7 @@ function(x) {
         var name = $(this).text().trim();
         $(".competitor").filter(function() {
             return $(this).text().trim() === name;
-        }).closest("tr").addClass("competitor-hover");
+        }).closest("td").addClass("competitor-hover").parent().addClass("competitor-hover");
     }
 });
 

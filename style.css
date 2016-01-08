@@ -24,7 +24,8 @@ td > div { border-radius: 1em; }
 .delayedfade-transition { -webkit-transition: all 1s ease 1s; transition: all 1s ease 1s; }
 .delayedfade-enter, .delayedfade-leave { opacity: 0; }
 .caret, .dropdown { cursor: pointer; }
-.competitor-hover td { background: #d9edf7 !important; }
+tr.competitor-hover td { background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNg4AEAAA8ADWjvwZwAAAAASUVORK5CYII=); }
+tr.competitor-hover td.competitor-hover { background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNgkAQAABwAGkn5GOoAAAAASUVORK5CYII=); }
 .table .success { font-weight: bold; }
 #competitor-add-multiple p { text-align: left; }
 #competitor-add-multiple textarea { height: 20em; }
