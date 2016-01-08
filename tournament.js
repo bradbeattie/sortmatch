@@ -533,4 +533,17 @@ function handleFileSelect(evt) {
 $("#files").on("change", handleFileSelect);
 
 
+// Highlight other instances of this competitor's name when hovering
+$(document).on("mouseenter mouseleave", ".competitor",
+function(x) {
+    $(".competitor-hover").removeClass("competitor-hover");
+    if (x.type === "mouseenter") {
+        var name = $(this).text().trim();
+        $(".competitor").filter(function() {
+            return $(this).text().trim() === name;
+        }).addClass("competitor-hover");
+    }
+});
+
+
 $("body").addClass(URI_KEY ? "detail" : "index");

@@ -10,7 +10,7 @@ var locale = {
           + "<p>Retour d'informations? Envoyer moi un email à <a href='mailto:bradbeattie@gmail.com'>bradbeattie@gmail.com</a>.</p>"
           + "<p><a href='https://github.com/bradbeattie/sortmatch/blob/master/lang.js.fr'>Pouvez-vous m'aider à traduire cette site?</a></p>"
           + "<hr />"
-          + "<p>Souvenez vous, Tournois est fait pour comparer deux concurrents à la fois et déclarer un vainqueur.<br />Si vous avez besoin d'un outil pour créer des élections, essayez plutôt <a href='https://modernballots.com'>ModernBallots.com</a> instead.</p>",
+          + "<p>Souvenez vous, Tournois est fait pour comparer deux concurrents à la fois et déclarer un vainqueur.<br />Si vous avez besoin d'un outil pour créer des élections, essayez plutôt <a href='https://modernballots.com'>ModernBallots.com</a>.</p>",
     hintStart: "Débutez en ajoutant au moins 2 concurrents.",
     hintBulkAdd: "Chaque ligne sera traitée comme un concurrent différent. Les doublons seront ignorés.",
     hintContinueUntil: "Continuez jusqu'à ce que tous les concurrents aient accompli au moins 7 matchs.",
