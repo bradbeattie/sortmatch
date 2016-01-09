@@ -10,16 +10,22 @@ Vue.directive('highlight', function() {
 });
 
 
+function ratingToClass(rating) {
+    if (rating > 1600) return "warning";
+    else if (rating > 1300) return "info";
+    else return "primary";
+}
+Vue.filter('ratingToClass', ratingToClass);
+
+
 function competitorToClass(competitor) {
     if (competitor.paused) return "danger";
-    else if (matchesCompleted(competitor) > 1) {
-        var rating = competitor.ranking.getRating();
-        if (rating > 1600) return "warning";
-        else if (rating > 1300) return "info";
-    }
-    return "primary";
+    else if (matchesCompleted(competitor) > 1) return ratingToClass(competitor.ranking.getRating());
+    else return "primary";
 }
 Vue.filter('competitorToClass', competitorToClass);
+
+
 Vue.filter('competitorToProgressBarClass', function(competitor) {
     var response = "progress-bar-" + competitorToClass(competitor);
     if (competitor.matched) response += " progress-bar-striped active";

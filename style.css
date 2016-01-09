@@ -26,7 +26,8 @@ td > div { border-radius: 1em; }
 .caret, .dropdown { cursor: pointer; }
 .text-muted.competitor { text-decoration: line-through; }
 .table .success { font-weight: bold; }
-tr.competitor-hover td { background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNg4AEAAA8ADWjvwZwAAAAASUVORK5CYII=); }
+.rating-label { width: 2.5em; display: inline-block; padding-left: 0; padding-right: 0; }
+tr.competitor-hover td { background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNgUAMAACkAJ+Ip3LMAAAAASUVORK5CYII=); }
 tr.competitor-hover td.competitor-hover { box-shadow: inset 0 0 0 0.4em rgba(0,0,0,0.2); }
 #competitor-add-multiple p { text-align: left; }
 #competitor-add-multiple textarea { height: 20em; }

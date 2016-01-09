@@ -91,6 +91,7 @@
                             <thead>
                                 <tr>
                                     <th>{{ lang.matchesFavored }}</th>
+                                    <th></th>
                                     <th>{{ lang.matchesChallenger }}</th>
                                     <th>{{ lang.matchesFinished }}</th>
                                 </tr>
@@ -98,10 +99,14 @@
                             <tbody>
                                 <tr v-for="match in matches | finished false | favoredOrder">
                                     <td v-bind:class="{ 'text-muted': match.favored.paused }" class="competitor">{{ match.favored.name }}</td>
+                                    <td>
+                                        <span class="label rating-label label-{{ match.favored | competitorToClass }}">{{ Math.max(100, match.favored.ranking.getRating()) / 100 | round '0' }}</span>
+                                        <span class="label rating-label label-{{ match.unfavored | competitorToClass }}">{{ Math.max(100, match.unfavored.ranking.getRating()) / 100 | round '0' }}</span>
+                                    </td>
                                     <td v-bind:class="{ 'text-muted': match.unfavored.paused }" class="competitor">{{ match.unfavored.name }}</td>
                                     <td>
                                         <div class="dropdown">
-                                            <button class="btn btn-{{ match.favored | competitorToClass }} btn-xs dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">{{ lang.matchesRecord }} <span class="caret"></span></button>
+                                            <button class="btn btn-success btn-xs dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">{{ lang.matchesRecord }} <span class="caret"></span></button>
                                             <ul class="dropdown-menu dropdown-menu-right">
                                                 <li><a href="#" v-on:click="matchResolve(match, RESULT_FAVORED)">{{ lang.matchesWin }} {{ match.favored.name }}</a></li>
                                                 <li><a href="#" v-on:click="matchResolve(match, RESULT_TIE)">{{ lang.matchesTie }}</a></li>
@@ -115,7 +120,7 @@
                             </tbody>
                             <tfoot>
                                 <tr class="active">
-                                    <td colspan="3">
+                                    <td colspan="4">
                                         <div class="btn-group">
                                             <label class="btn btn-sm btn-default" v-bind:class="{ 'active': paused }">
                                                 <input type="radio" v-bind:value="true" v-model="paused">
