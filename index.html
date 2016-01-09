@@ -38,9 +38,9 @@
                             </thead>
                             <tbody>
                                 <tr v-for="competitor in competitors | orderBy '(paused ? 0 : 10000) + ranking.getRating()' -1">
-                                    <td v-highlight="competitor.name" v-bind:class="{ 'text-muted': competitor.paused }">
+                                    <td v-highlight="competitor.name">
                                         <span class="dropdown">
-                                            <span class="dropdown-toggle competitor" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">{{ competitor.name }} <span class="caret"></span></span>
+                                            <span class="dropdown-toggle competitor" v-bind:class="{ 'text-muted': competitor.paused }" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">{{ competitor.name }} <span class="caret"></span></span>
                                             <ul class="dropdown-menu">
                                                 <li><a href="#" v-on:click="competitorNameChange(competitor)">{{ lang.competitorName }}</a>
                                                 <li><a href="#" v-on:click="competitorInitialRatingChange(competitor)">{{ lang.competitorInitialRating }}</a>
