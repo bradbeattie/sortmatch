@@ -210,7 +210,7 @@
                 <h1>{{{ lang.indexHeader }}}</h1>
                 <p>
                     <span v-for="tournamentName in tournamentNames">
-                        <a href="?{{ tournamentName }}" class="btn" v-bind:class="{ 'btn-primary': tournamentName == 'Example Tournament', 'btn-info': tournamentName != 'Example Tournament' }"><span class="glyphicon glyphicon-play"></span> {{ tournamentName }}</a>
+                        <a href="?{{ tournamentName }}" class="btn" v-bind:class="{ 'btn-primary': tournamentName.endsWith(' Example'), 'btn-info': !tournamentName.endsWith(' Example') }"><span class="glyphicon glyphicon-play"></span> {{ tournamentName }}</a>
                     </span>
                     <button class="btn btn-success" v-on:click="tournamentAdd"><span class="glyphicon glyphicon-plus"></span> {{ lang.indexAdd }}</button>
                 </p>

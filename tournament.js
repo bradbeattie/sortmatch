@@ -3,6 +3,142 @@ var RESULT_TIE = 0.5;
 var RESULT_UNFAVORED = 0;
 var RESULT_ABANDONED = null;
 var URI_KEY = decodeURIComponent(location.search.substring(1).split("&")[0]);
+var EXAMPLES = {
+    "NHL Example": {
+        "Montreal Canadiens": 1688,
+        "Tampa Bay Lightning" :1613,
+        "Detroit Red Wings": 1313,
+        "New York Rangers": 1800,
+        "Washington Capitals": 1350,
+        "New York Islanders": 1350,
+        "Ottawa Senators": 1275,
+        "Pittsburgh Penguins": 1238,
+        "St. Louis Blues": 1650,
+        "Nashville Predators": 1463,
+        "Chicago Blackhawks": 1388,
+        "Anaheim Ducks": 1650,
+        "Vancouver Canucks": 1350,
+        "Calgary Flames": 1200,
+        "Minnesota Wild": 1313,
+        "Winnepeg Jets": 1275,
+    },
+    "NFL Example": {
+        "New England Patriots": 1851,
+        "Atlanta Falcons": 1833,
+        "Cincinnati Bengals": 1809,
+        "Denver Broncos": 1809,
+        "Green Bay Packers": 1791,
+        "Arizona Cardinals": 1774,
+        "Carolina Panthers": 1745,
+        "Pittsburgh Steelers": 1649,
+        "Buffalo Bills": 1615,
+        "Dallas Cowboys": 1607,
+        "Oakland Raiders": 1596,
+        "Minnesota Vikings": 1589,
+        "Philadelphia Eagles": 1510,
+        "Jacksonville Jaguars": 1503,
+        "New York Jets": 1490,
+        "New York Giants": 1471,
+        "Kansas City Chiefs": 1467,
+        "Houston Texans": 1446,
+        "Indianapolis Colts": 1434,
+        "Cleveland Browns": 1426,
+        "San Diego Chargers": 1411,
+        "Seattle Seahawks": 1393,
+        "San Francisco 49ers": 1380,
+        "Washington Redskins": 1375,
+        "St. Louis Rams": 1351,
+        "Miami Dolphins": 1344,
+        "Tampa Bay Buccaneers": 1317,
+        "Tennessee Titans": 1280,
+        "Detroit Lions": 1191,
+        "Baltimore Ravens": 1191,
+        "New Orleans Saints": 1185,
+        "Chicago Bears": 1167,
+    },
+    "Chess World Cup Example": {
+        "Veselin Topalov (BUL)": 2816/2,
+        "Hikaru Nakamura (USA)": 2814/2,
+        "Fabiano Caruana (USA)": 2808/2,
+        "Anish Giri (NED)": 2793/2,
+        "Wesley So (USA)": 2779/2,
+        "Vladimir Kramnik (RUS)": 2777/2,
+        "Alexander Grischuk (RUS)": 2771/2,
+        "Ding Liren (CHN)": 2770/2,
+        "Levon Aronian (ARM)": 2765/2,
+        "Dmitry Jakovenko (RUS)": 2759/2,
+        "Sergey Karjakin (RUS)": 2753/2,
+        "Evgeny Tomashevsky (RUS)": 2747/2,
+        "Boris Gelfand (ISR)": 2741/2,
+        "Pendyala Harikrishna (IND)": 2740/2,
+        "Michael Adams (ENG)": 2740/2,
+        "Peter Svidler (RUS)": 2739/2,
+        "Teimour Radjabov (AZE)": 2738/2,
+        "Leinier Domínguez (CUB)": 2736/2,
+        "Shakhriyar Mamedyarov (AZE)": 2735/2,
+        "Radosław Wojtaszek (POL)": 2733/2,
+    },
+    "Super Smash Bros. Example": {
+        "Bayonetta": 1500,
+        "Bowser": 1500,
+        "Bowser Jr.": 1500,
+        "Captain Falcon": 1500,
+        "Charizard": 1500,
+        "Cloud": 1500,
+        "Corrin": 1500,
+        "Dark Pit": 1500,
+        "Diddy Kong": 1500,
+        "Donkey Kong": 1500,
+        "Dr. Mario": 1500,
+        "Duck Hunt": 1500,
+        "Falco": 1500,
+        "Fox": 1500,
+        "Ganondorf": 1500,
+        "Greninja": 1500,
+        "Ike": 1500,
+        "Jigglypuff": 1500,
+        "King Dedede": 1500,
+        "Kirby": 1500,
+        "Link": 1500,
+        "Little Mac": 1500,
+        "Lucario": 1500,
+        "Lucas": 1500,
+        "Lucina": 1500,
+        "Luigi": 1500,
+        "Mario": 1500,
+        "Marth": 1500,
+        "Mega Man": 1500,
+        "Meta Knight": 1500,
+        "Mewtwo": 1500,
+        "Mii Brawler": 1500,
+        "Mii Gunner": 1500,
+        "Mii Swordfighter": 1500,
+        "Mr. Game & Watch": 1500,
+        "Ness": 1500,
+        "Olimar": 1500,
+        "Pac-Man": 1500,
+        "Palutena": 1500,
+        "Peach": 1500,
+        "Pikachu": 1500,
+        "Pit": 1500,
+        "R.O.B.": 1500,
+        "Robin": 1500,
+        "Rosalina & Luma": 1500,
+        "Roy": 1500,
+        "Ryu": 1500,
+        "Samus": 1500,
+        "Sheik": 1500,
+        "Shulk": 1500,
+        "Sonic": 1500,
+        "Toon Link": 1500,
+        "Villager": 1500,
+        "Wario": 1500,
+        "Wii Fit Trainer": 1500,
+        "Yoshi": 1500,
+        "Zelda": 1500,
+        "Zero Suit Samus": 1500,
+    }
+};
 
 
 function ratingToClass(rating) {
@@ -62,7 +198,7 @@ Vue.filter('round', function(value, decimals) {
 });
 
 
-var tournamentNames = ["Example Tournament"];
+var tournamentNames = Object.keys(EXAMPLES).map(function(name) { return name; });
 for (var key in localStorage) {
     if (localStorage.hasOwnProperty(key) && tournamentNames.indexOf(key) === -1) {
         tournamentNames.push(key);
@@ -465,28 +601,11 @@ setInterval(function() {
 
 
 // If the tournament is named "Example Tournament", run the demo
-if (vue.name == "Example Tournament" && !vue.competitors.length) {
+if (EXAMPLES.hasOwnProperty(vue.name) && !vue.competitors.length) {
     vue.banner = "https://sortmatch.ca/banner.jpg";
-    var competitors = {
-        "Montreal Canadiens": 110,
-        "Tampa Bay Lightning" :108,
-        "Detroit Red Wings": 100,
-        "New York Rangers": 113,
-        "Washington Capitals": 101,
-        "New York Islanders": 101,
-        "Ottawa Senators": 99,
-        "Pittsburgh Penguins": 98,
-        "St. Louis Blues": 109,
-        "Nashville Predators": 104,
-        "Chicago Blackhawks": 102,
-        "Anaheim Ducks": 109,
-        "Vancouver Canucks": 101,
-        "Calgary Flames": 97,
-        "Minnesota Wild": 100,
-        "Winnepeg Jets": 99,
-    };
+    var competitors = EXAMPLES[vue.name];
     for(var name in competitors) {
-        var initialRating = Math.round(100 * (6 * (competitors[name] - 97) / (113 - 97) + 12));
+        var initialRating = competitors[name];
         vue.competitors.push({
             name: name,
             initialRating: initialRating,
