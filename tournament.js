@@ -546,7 +546,7 @@ $(document).on("mouseenter mouseleave", "[data-competitor]", function(x) {
             return match.finished;
         }).sort(function(a, b) {
             return a.finished - b.finished;
-        }).slice(-100).forEach(function(match) {
+        }).slice(-10).forEach(function(match) {
             var opponent = match.favored === competitor ? match.unfavored : match.favored;
             var opponent_row = competitors_table.find("[data-competitor="+vue.competitors.indexOf(opponent)+"]").closest("tr");
             opponent_row.removeClass();
