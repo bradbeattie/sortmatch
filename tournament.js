@@ -108,6 +108,15 @@ var EXAMPLES = {
         "FearfulFerret": 1061,
         "Scallions": 1049,
     },
+    "Euchre Example": {
+        "Brad and Andrea": 1500,
+        "Dan and Laura": 1500,
+        "Hélène and Mariah": 1500,
+        "Lisa and James": 1500,
+        "Karen and Matt": 1500,
+        "Aurélie and Stephane": 1500,
+        "Manuel and Ophelie": 1500,
+    }
 };
 
 
