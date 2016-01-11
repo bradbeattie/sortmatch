@@ -28,7 +28,7 @@
                     <div class="col-md-4" v-bind:class="{ 'col-md-offset-4': !matches.length, 'sliding-transition': matches.length }">
                         <h2>{{ lang.competitors }}</h2>
                         <p v-if="competitors.length < 2">{{ lang.hintStart }}</p>
-                        <table v-bind:class="{ 'table': competitors.length, 'unstyled': !competitors.length }">
+                        <table id="competitors" v-bind:class="{ 'table': competitors.length, 'unstyled': !competitors.length }">
                             <thead v-if="competitors.length">
                                 <tr>
                                     <th>{{ lang.competitorName }}</th>
@@ -38,9 +38,9 @@
                             </thead>
                             <tbody>
                                 <tr v-for="competitor in competitors | orderBy '(paused ? 0 : 10000) + ranking.getRating()' -1">
-                                    <td v-highlight="competitor.name">
+                                    <td data-competitor="{{ competitors.indexOf(competitor) }}">
                                         <span class="dropdown">
-                                            <span class="dropdown-toggle competitor" v-bind:class="{ 'text-muted': competitor.paused }" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">{{ competitor.name }} <span class="caret"></span></span>
+                                            <span class="dropdown-toggle" v-bind:class="{ 'text-muted': competitor.paused }" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">{{ competitor.name }} <span class="caret"></span></span>
                                             <ul class="dropdown-menu">
                                                 <li><a href="#" v-on:click="competitorNameChange(competitor)">{{ lang.competitorName }}</a>
                                                 <li><a href="#" v-on:click="competitorInitialRatingChange(competitor)">{{ lang.competitorInitialRating }}</a>
@@ -48,8 +48,8 @@
                                             </ul>
                                         </span>
                                     </td>
-                                    <td v-highlight="competitor.matches.length" v-bind:class="{ 'text-muted': competitor.paused }">{{ competitor | matchesCompleted }}</td>
-                                    <td v-highlight="competitor.ranking.getRating()" title="{{ Math.max(100, competitor.ranking.getRating()) / 100 | round '2' }}">
+                                    <td v-bind:class="{ 'text-muted': competitor.paused }">{{ competitor | matchesCompleted }}</td>
+                                    <td title="{{ Math.max(100, competitor.ranking.getRating()) / 100 | round '2' }}">
                                         <div class="progress">
                                             <div class="progress-bar {{ competitor | competitorToProgressBarClass }}" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100" style="width: {{ Math.min(100, Math.max(20, competitor.ranking.getRating() / 20)) }}%;">
                                                 <span v-if="competitor.ranking.getRating() >= 1300">{{ Math.max(100, competitor.ranking.getRating()) / 100 | round '1' }}</span>
@@ -91,19 +91,21 @@
                             <thead>
                                 <tr>
                                     <th>{{ lang.matchesFavored }}</th>
-                                    <th></th>
+                                    <th class="hidden-xs"></th>
                                     <th>{{ lang.matchesChallenger }}</th>
                                     <th>{{ lang.matchesFinished }}</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr v-for="match in matches | finished false | favoredOrder">
-                                    <td v-bind:class="{ 'text-muted': match.favored.paused }" class="competitor">{{ match.favored.name }}</td>
-                                    <td>
-                                        <span class="label rating-label label-{{ match.favored | competitorToClass }}">{{ Math.max(100, match.favored.ranking.getRating()) / 100 | round '0' }}</span>
-                                        <span class="label rating-label label-{{ match.unfavored | competitorToClass }}">{{ Math.max(100, match.unfavored.ranking.getRating()) / 100 | round '0' }}</span>
+                                    <td v-bind:class="{ 'text-muted': match.favored.paused }" data-competitor="{{ competitors.indexOf(match.favored) }}">{{ match.favored.name }}</td>
+                                    <td class="hidden-xs">
+                                        <div class="progress" v-if="match.favored.matches.length > 2 || match.unfavored.matches.length > 2">
+                                            <div class="progress-bar progress-bar-{{ match.favored | competitorToClass }}" style="width: 50%">&nbsp;</div>
+                                            <div class="progress-bar progress-bar-{{ match.unfavored | competitorToClass }}" style="width: 50%">&nbsp;</div>
+                                        </div>
                                     </td>
-                                    <td v-bind:class="{ 'text-muted': match.unfavored.paused }" class="competitor">{{ match.unfavored.name }}</td>
+                                    <td v-bind:class="{ 'text-muted': match.unfavored.paused }" data-competitor="{{ competitors.indexOf(match.unfavored) }}">{{ match.unfavored.name }}</td>
                                     <td>
                                         <div class="dropdown">
                                             <button class="btn btn-success btn-xs dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">{{ lang.matchesRecord }} <span class="caret"></span></button>
@@ -182,7 +184,7 @@
                             <p v-if="competitors.length && matches.length >= competitors.length * 4 && paused">{{ lang.hintFinishRemaining }}</p>
                         </footer>
                         <h2>{{ lang.matchesCompleted }}</h2>
-                        <table class="table">
+                        <table class="table table-condensed" id="matches-completed">
                             <thead>
                                 <tr>
                                     <th>{{ lang.matchesMatched }}</th>
@@ -193,10 +195,10 @@
                             </thead>
                             <tbody>
                                 <tr v-for="match in matches | finished true | orderBy 'finished' -1">
-                                    <td v-highlight="match.start">{{ match.start.toLocaleTimeString() }}</td>
-                                    <td v-bind:class="{ 'text-muted': match.favored.paused,   'danger': match.result === RESULT_UNFAVORED, 'success': match.result === RESULT_FAVORED, 'warning': match.result === RESULT_TIE, 'info': match.result === RESULT_ABANDONED }" class="competitor">{{ match.favored.name }}</td>
-                                    <td v-bind:class="{ 'text-muted': match.unfavored.paused, 'danger': match.result === RESULT_FAVORED, 'success': match.result === RESULT_UNFAVORED, 'warning': match.result === RESULT_TIE, 'info': match.result === RESULT_ABANDONED }" class="competitor">{{ match.unfavored.name }}</td>
-                                    <td v-highlight="match.finished" v-on:click="matchRevert(match)">{{ match.finished.toLocaleTimeString() }} <span class="caret"></span></td>
+                                    <td>{{ match.start.toLocaleTimeString() }}</td>
+                                    <td v-bind:class="{ 'text-muted': match.favored.paused,   'danger': match.result === RESULT_UNFAVORED, 'success': match.result === RESULT_FAVORED, 'warning': match.result === RESULT_TIE, 'info': match.result === RESULT_ABANDONED }" data-competitor="{{ competitors.indexOf(match.favored) }}">{{ match.favored.name }}</td>
+                                    <td v-bind:class="{ 'text-muted': match.unfavored.paused, 'danger': match.result === RESULT_FAVORED, 'success': match.result === RESULT_UNFAVORED, 'warning': match.result === RESULT_TIE, 'info': match.result === RESULT_ABANDONED }" data-competitor="{{ competitors.indexOf(match.unfavored) }}">{{ match.unfavored.name }}</td>
+                                    <td v-on:click="matchRevert(match)">{{ match.finished.toLocaleTimeString() }} <span class="caret"></span></td>
                                 </tr>
                             </tbody>
                         </table>

@@ -5,11 +5,6 @@ var RESULT_ABANDONED = null;
 var URI_KEY = decodeURIComponent(location.search.substring(1).split("&")[0]);
 
 
-Vue.directive('highlight', function() {
-    $(this.el).stop(true).animate({backgroundColor: "hsl(30, 100%, 75%)"}).animate({backgroundColor: "transparent"}, 10000);
-});
-
-
 function ratingToClass(rating) {
     if (rating > 1600) return "warning";
     else if (rating > 1300) return "info";
@@ -540,14 +535,32 @@ $("#files").on("change", handleFileSelect);
 
 
 // Highlight other instances of this competitor's name when hovering
-$(document).on("mouseenter mouseleave", ".competitor",
-function(x) {
-    $(".competitor-hover").removeClass("competitor-hover");
+$(document).on("mouseenter mouseleave", "[data-competitor]", function(x) {
+    var competitors_table = $("#competitors");
+    competitors_table.find("tr").removeClass();
+    $(".hover").removeClass("hover");
     if (x.type === "mouseenter") {
-        var name = $(this).text().trim();
-        $(".competitor").filter(function() {
-            return $(this).text().trim() === name;
-        }).closest("td").addClass("competitor-hover").parent().addClass("competitor-hover");
+        var index = $(this).data("competitor");
+        var competitor = vue.competitors[index];
+        competitor.matches.filter(function(match) {
+            return match.finished;
+        }).sort(function(a, b) {
+            return a.finished - b.finished;
+        }).slice(-100).forEach(function(match) {
+            var opponent = match.favored === competitor ? match.unfavored : match.favored;
+            var opponent_row = competitors_table.find("[data-competitor="+vue.competitors.indexOf(opponent)+"]").closest("tr");
+            opponent_row.removeClass();
+            if (match.result === RESULT_TIE) {
+                opponent_row.addClass("warning");
+            } else if (match.result === RESULT_ABANDONED) {
+                opponent_row.addClass("info");
+            } else if (match.result === RESULT_FAVORED && match.favored === competitor || match.result === RESULT_UNFAVORED && match.unfavored === competitor) {
+                opponent_row.addClass("success");
+            } else {
+                opponent_row.addClass("danger");
+            }
+        });
+        $("[data-competitor="+index+"]").closest("td, .label").addClass("hover").parent().addClass("hover");
     }
 });
 
