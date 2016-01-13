@@ -64,7 +64,7 @@ var EXAMPLES = {
         "New Orleans Saints": 1185,
         "Chicago Bears": 1167,
     },
-    "Chess World Cup Example": {
+    "Chess Example": {
         "Veselin Topalov (BUL)": 2816/2,
         "Hikaru Nakamura (USA)": 2814/2,
         "Fabiano Caruana (USA)": 2808/2,
