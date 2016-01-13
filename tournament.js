@@ -457,6 +457,15 @@ function regenerateRatings() {
 }
 
 
+function suitability(competitor, considering) {
+    var rating_difference = Math.abs(competitor.ranking.getRating() - considering.ranking.getRating());
+    var matches_played_together = competitor.matches.filter(function(match) {
+        return match.favored === considering || match.unfavored === considering;
+    }).length;
+    return rating_difference + matches_played_together * 300;
+}
+
+
 function planMatches() {
 
     // Just bail if we're paused
@@ -512,7 +521,6 @@ function planMatches() {
                 var pairing = pairable.filter(function(competitor) {
                     return competitor !== considering
                 }).sort(function(a, b) {
-                    console.log(considering.name, a.name, opponent_history.lastIndexOf(a), b.name, opponent_history.lastIndexOf(b));
                     return opponent_history.lastIndexOf(a) - opponent_history.lastIndexOf(b)
                          + (Math.random() - 0.5) * 0.01; // Random for tie breakers
                 })[0];
@@ -520,13 +528,17 @@ function planMatches() {
 
             // Otherwise pair with the viable candidate with the closest rating
             else {
-                var pairing = pairable.filter(function(competitor) {
+                var pairing = null;
+                var pairing_suitability = null;
+                pairable.filter(function(competitor) {
                     return competitor !== considering
-                }).sort(function(a, b) {
-                    return Math.abs(a.ranking.getRating() - considering.ranking.getRating())
-                         - Math.abs(b.ranking.getRating() - considering.ranking.getRating())
-                         + (Math.random() - 0.5) * 0.01; // Random for tie breakers
-                })[0];
+                }).forEach(function(competitor) {
+                    competitor_suitability = suitability(competitor, considering) + (Math.random() - 0.5) * 0.01;
+                    if (pairing_suitability === null || competitor_suitability < pairing_suitability) {
+                        pairing = competitor;
+                        pairing_suitability = competitor_suitability;
+                    }
+                });
             }
         }
 
