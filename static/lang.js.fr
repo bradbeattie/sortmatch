@@ -13,7 +13,7 @@ var locale = {
           + "<p>Souvenez vous, Tournois est fait pour comparer deux concurrents à la fois et déclarer un vainqueur.<br />Si vous avez besoin d'un outil pour créer des élections, essayez plutôt <a href='https://modernballots.com'>ModernBallots.com</a>.</p>",
     hintStart: "Débutez en ajoutant au moins 2 concurrents.",
     hintBulkAdd: "Chaque ligne sera traitée comme un concurrent différent. Les doublons seront ignorés.",
-    hintContinueUntil: "Continuez jusqu'à ce que tous les concurrents aient accompli au moins 7 matchs.",
+    hintContinueUntil: "Continuez jusqu'à ce que tous les concurrents aient accompli au moins 10 matchs.",
     hintPauseWhenDone: "Lorsque vous êtes satisfait que suffisamment de matchs ont eu lieu, mettez en pause la mise en relation et terminez les matchs restants.",
     hintFinishRemaining: "Terminez les matchs restants et déclarez le vainqueur. Eventuellement, maintenir un match final entre les deux premiers concurrents.",
     cancel: "Annuler",

@@ -5,7 +5,7 @@ var RESULT_ABANDONED = null;
 var URI_KEY = decodeURIComponent(location.search.substring(1).split("&")[0]);
 var EXAMPLES = {
     "Smash Bros. Example": {
-        "Alice as Bayonetta": 1500,
+        "Andrea as Bayonetta": 1500,
         "Brad as Ganondorf": 1500,
         "Christine as Samus": 1500,
         "Dan as Pikachu": 1500,
@@ -130,7 +130,7 @@ Vue.filter('ratingToClass', ratingToClass);
 
 function competitorToClass(competitor) {
     if (competitor.paused) return "danger";
-    else if (matchesCompleted(competitor) > 1) return ratingToClass(competitor.ranking.getRating());
+    else if (matchesCompletedLength(competitor) > 1) return ratingToClass(competitor.ranking.getRating());
     else return "primary";
 }
 Vue.filter('competitorToClass', competitorToClass);
@@ -152,9 +152,12 @@ Vue.filter('finished', function(matches, finished) {
 function matchesCompleted(competitor) {
     return competitor.matches.filter(function(match, index) {
         return match.finished && match.result !== RESULT_ABANDONED;
-    }).length;
+    });
 }
-Vue.filter('matchesCompleted', matchesCompleted);
+function matchesCompletedLength(competitor) {
+    return matchesCompleted(competitor).length;
+}
+Vue.filter('matchesCompletedLength', matchesCompletedLength);
 
 
 Vue.filter('favoredOrder', function(matches) {
@@ -462,7 +465,7 @@ function suitability(competitor, considering) {
     var matches_played_together = competitor.matches.filter(function(match) {
         return match.favored === considering || match.unfavored === considering;
     }).length;
-    return rating_difference + matches_played_together * 300;
+    return rating_difference * (matches_played_together + 1) + matches_played_together * 100;  // Still not 100% on the best combination of these two variables
 }
 
 
@@ -593,7 +596,7 @@ setInterval(function() {
 
 // If the tournament is named "Example Tournament", run the demo
 if (EXAMPLES.hasOwnProperty(vue.name) && !vue.competitors.length) {
-    vue.banner = "https://sortmatch.ca/banner.jpg";
+    vue.banner = "https://sortmatch.ca/static/banner.jpg";
     var competitors = EXAMPLES[vue.name];
     for(var name in competitors) {
         var initialRating = competitors[name];
@@ -652,22 +655,31 @@ $(document).on("mouseenter mouseleave", "[data-competitor]", function(x) {
     if (x.type === "mouseenter") {
         var index = $(this).data("competitor");
         var competitor = vue.competitors[index];
-        competitor.matches.filter(function(match) {
-            return match.finished;
-        }).sort(function(a, b) {
-            return a.finished - b.finished;
-        }).slice(-10).forEach(function(match) {
+        var opponent_counts = [];
+        matchesCompleted(competitor).forEach(function(match) {
             var opponent = match.favored === competitor ? match.unfavored : match.favored;
-            var opponent_row = competitors_table.find("[data-competitor="+vue.competitors.indexOf(opponent)+"]").closest("tr");
-            opponent_row.removeClass();
+            var opponent_index = vue.competitors.indexOf(opponent);
+            if (opponent_counts[opponent_index] === undefined) {
+                opponent_counts[opponent_index] = 0;
+            }
+            //var opponent_row = competitors_table.find("[data-competitor="+vue.competitors.indexOf(opponent)+"]").closest("tr");
+            //opponent_row.removeClass();
             if (match.result === RESULT_TIE) {
-                opponent_row.addClass("warning");
             } else if (match.result === RESULT_ABANDONED) {
-                opponent_row.addClass("info");
             } else if (match.result === RESULT_FAVORED && match.favored === competitor || match.result === RESULT_UNFAVORED && match.unfavored === competitor) {
-                opponent_row.addClass("success");
+                opponent_counts[opponent_index] += 1;
             } else {
-                opponent_row.addClass("danger");
+                opponent_counts[opponent_index] -= 1;
+            }
+        });
+        opponent_counts.forEach(function(count, opponent_index) {
+            var row = competitors_table.find("[data-competitor="+opponent_index+"]").closest("tr");
+            if (count < 0) {
+                row.addClass("danger");
+            } else if (count === 0) {
+                row.addClass("warning");
+            } else {
+                row.addClass("success");
             }
         });
         $("[data-competitor="+index+"]").closest("td, .label").addClass("hover").parent().addClass("hover");
