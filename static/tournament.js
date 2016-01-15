@@ -650,7 +650,7 @@ $("#files").on("change", handleFileSelect);
 // Highlight other instances of this competitor's name when hovering
 $(document).on("mouseenter mouseleave", "[data-competitor]", function(x) {
     var competitors_table = $("#competitors");
-    competitors_table.find("tr").removeClass();
+    competitors_table.find("tr").css("background", "");
     $(".hover").removeClass("hover");
     if (x.type === "mouseenter") {
         var index = $(this).data("competitor");
@@ -660,27 +660,19 @@ $(document).on("mouseenter mouseleave", "[data-competitor]", function(x) {
             var opponent = match.favored === competitor ? match.unfavored : match.favored;
             var opponent_index = vue.competitors.indexOf(opponent);
             if (opponent_counts[opponent_index] === undefined) {
-                opponent_counts[opponent_index] = 0;
+                opponent_counts[opponent_index] = [0, 0];
             }
-            //var opponent_row = competitors_table.find("[data-competitor="+vue.competitors.indexOf(opponent)+"]").closest("tr");
-            //opponent_row.removeClass();
             if (match.result === RESULT_TIE) {
-            } else if (match.result === RESULT_ABANDONED) {
+                opponent_counts[opponent_index][0] += 1;
+                opponent_counts[opponent_index][1] += 1;
             } else if (match.result === RESULT_FAVORED && match.favored === competitor || match.result === RESULT_UNFAVORED && match.unfavored === competitor) {
-                opponent_counts[opponent_index] += 1;
+                opponent_counts[opponent_index][0] += 1;
             } else {
-                opponent_counts[opponent_index] -= 1;
+                opponent_counts[opponent_index][1] += 1;
             }
         });
-        opponent_counts.forEach(function(count, opponent_index) {
-            var row = competitors_table.find("[data-competitor="+opponent_index+"]").closest("tr");
-            if (count < 0) {
-                row.addClass("danger");
-            } else if (count === 0) {
-                row.addClass("warning");
-            } else {
-                row.addClass("success");
-            }
+        opponent_counts.forEach(function(counts, opponent_index) {
+            competitors_table.find("[data-competitor="+opponent_index+"]").closest("tr").css("background", "hsl("+parseInt(100 * counts[0] / (counts[0] + counts[1]))+", 56%, 89%)");
         });
         $("[data-competitor="+index+"]").closest("td, .label").addClass("hover").parent().addClass("hover");
     }
