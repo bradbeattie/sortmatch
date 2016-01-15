@@ -480,7 +480,10 @@ function planMatches() {
     var any_planned = false;
     var active = vue.competitors.filter(function(competitor) {
         return !competitor.paused;
+    }).sort(function(a, b) {
+        return b.ranking.getRating() - a.ranking.getRating();
     });
+
     while (true) {
 
         // Filter down on active candidates without pending matches
@@ -493,12 +496,6 @@ function planMatches() {
         // If we don't have enough pairable candidates, stop
         if (pairable.length < 2) {
             break;
-        }
-
-        // If we only have two, just select them outright
-        else if (pairable.length === 2) {
-            considering = pairable[0];
-            pairing = pairable[1];
         }
 
         // Otherwise filter viable to least matches, and select the one with the highest score
@@ -516,33 +513,27 @@ function planMatches() {
                 return b.ranking.getRating() - a.ranking.getRating() + (Math.random() - 0.5) * 0.01 // Random for tie breakers
             })[0];
 
-            // If there are only four or fewer active candidates, just use round-robin
-            if (active.length <= 4) {
-                var opponent_history = considering.matches.map(function(match) {
-                    return (match.favored === considering) ? match.unfavored : match.favored;
+            // Find competitors nearby on the ladder
+            considering_index = active.indexOf(considering);
+            for (var distance = 3; ; distance++) {
+                nearby = pairable.filter(function(competitor) {
+                    return competitor !== considering && Math.abs(considering_index - active.indexOf(competitor)) <= distance;
                 });
-                var pairing = pairable.filter(function(competitor) {
-                    return competitor !== considering
-                }).sort(function(a, b) {
-                    return opponent_history.lastIndexOf(a) - opponent_history.lastIndexOf(b)
-                         + (Math.random() - 0.5) * 0.01; // Random for tie breakers
-                })[0];
+                if (nearby.length) break;
             }
 
-            // Otherwise pair with the viable candidate with the closest rating
-            else {
-                var pairing = null;
-                var pairing_suitability = null;
-                pairable.filter(function(competitor) {
-                    return competitor !== considering
-                }).forEach(function(competitor) {
-                    competitor_suitability = suitability(competitor, considering) + (Math.random() - 0.5) * 0.01;
-                    if (pairing_suitability === null || competitor_suitability < pairing_suitability) {
-                        pairing = competitor;
-                        pairing_suitability = competitor_suitability;
-                    }
-                });
-            }
+            // Of these found competitors, select the one that the considered competitor has played against the most frequently
+            var pairing = null;
+            var pairing_suitability = null;
+            nearby.forEach(function(competitor) {
+                var competitor_suitability = matchesCompleted(considering).filter(function(match) {
+                    return match.favored === competitor || match.unfavored === competitor;
+                }).length * 10000 + Math.abs(competitor.ranking.getRating() - considering.ranking.getRating()) * 0.01; // Break ties with rating similarity
+                if (pairing_suitability === null || competitor_suitability < pairing_suitability) {
+                    pairing = competitor;
+                    pairing_suitability = competitor_suitability;
+                }
+            });
         }
 
         // Now that we have a pair, create a match
