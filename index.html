@@ -25,7 +25,7 @@
             <div id="detail" v-if="name" v-cloak>
                 <p v-if="banner"><img v-on:click="bannerChange" v-bind:src="banner" /></p>
                 <div class="row">
-                    <div class="col-md-4" v-bind:class="{ 'col-md-offset-4': !matches.length, 'sliding-transition': matches.length }">
+                    <div class="col-md-4" v-bind:class="{ 'col-md-offset-4': competitors.length < 2, 'sliding-transition': competitors.length >= 2 }">
                         <h2>{{ lang.competitors }}</h2>
                         <p v-if="competitors.length < 2">{{ lang.hintStart }}</p>
                         <table id="competitors" v-bind:class="{ 'table': competitors.length, 'unstyled': !competitors.length }">
@@ -37,7 +37,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr v-for="competitor in competitors | orderBy '(paused ? 0 : 10000) + ranking.getRating()' -1">
+                                <tr v-for="competitor in competitors | orderBy '(paused ? 0 : 10000) + ranking.getRating()' -1" v-bind:class="{ 'active': !competitor.matched }">
                                     <td data-competitor="{{ competitors.indexOf(competitor) }}">
                                         <span class="dropdown">
                                             <span class="dropdown-toggle" v-bind:class="{ 'text-muted': competitor.paused }" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">{{ competitor.name }} <span class="caret"></span></span>
@@ -85,8 +85,8 @@
                             </tfoot>
                         </table>
                     </div>
-                    <div class="col-md-8" v-if="matches.length" transition="delayedfade">
-                        <h2 v-if="matches.length">{{ lang.matchesPending }}</h2>
+                    <div class="col-md-8" v-if="competitors.length > 1" transition="delayedfade">
+                        <h2>{{ lang.matchesPending }}</h2>
                         <table class="table">
                             <thead>
                                 <tr>
@@ -123,34 +123,20 @@
                             <tfoot>
                                 <tr class="active">
                                     <td colspan="4">
-                                        <div class="btn-group">
-                                            <label class="btn btn-sm btn-default" v-bind:class="{ 'active': paused }">
-                                                <input type="radio" v-bind:value="true" v-model="paused">
-                                                <span class="glyphicon glyphicon-pause"></span> {{ lang.tournamentPause }}
-                                            </label>
-                                            <label class="btn btn-sm btn-default" v-bind:class="{ 'active': !paused }">
-                                                <input type="radio" v-bind:value="false" v-model="paused">
-                                                <span v-if="paused || !countdownActive">
-                                                    <span class="glyphicon glyphicon-play"></span> {{ lang.tournamentContinue }}
-                                                </span>
-                                                <span v-else>
-                                                    <span class="glyphicon glyphicon-play"></span> {{ lang.tournamentNext }}: <span id="countdown">{{ countdown }}s</span>
-                                                </span>
-                                            </label>
-                                        </div>
+                                        <button class="btn btn-sm btn-default" data-toggle="modal" data-target="#match-add"><span class="glyphicon glyphicon-plus"></span> {{ lang.matchesAdd }}</button>
+                                        <button v-on:click="planMatches()" class="btn btn-sm" v-bind:class="{ 'btn-primary': !matches.length, 'btn-default': matches.length }"><span class="glyphicon glyphicon-play"></span> {{ lang.tournamentContinue }}</button>
                                         <span class="dropdown">
                                             <button class="btn btn-default btn-sm dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true"><span class="glyphicon glyphicon-cog"></span> <span class="caret"></span></button>
                                             <ul class="dropdown-menu dropdown-menu-right">
                                                 <li class="dropdown-header">{{ lang.tournamentBenign }}</li>
                                                 <li><a href="#" v-on:click="tournamentExport">{{ lang.tournamentExport }}</a>
                                                 <li><a href="#" v-on:click="bannerChange">{{ lang.tournamentBanner }}</a>
-                                                <li><a href="#" data-toggle="modal" data-target="#match-add">{{ lang.matchesAdd }}</a>
                                                 <li role="separator" class="divider"></li>
                                                 <li class="dropdown-header">{{ lang.tournamentDestructive }}</li>
                                                 <li><a href="#" v-on:click="tournamentDelete">{{ lang.tournamentDelete }}</a>
                                             </ul>
                                         </span>
-                                        <div class="modal fade" id="match-add" tabindex="-1" role="dialog">
+                                        <div class="modal" id="match-add" tabindex="-1" role="dialog">
                                             <div class="modal-dialog">
                                                 <div class="modal-content">
                                                     <div class="modal-body">
@@ -180,8 +166,7 @@
                         </table>
                         <footer class="small">
                             <p v-if="competitors.length && matches.length && matches.length < competitors.length * 5">{{ lang.hintContinueUntil }}</p>
-                            <p v-if="competitors.length && matches.length >= competitors.length * 5 && !paused">{{ lang.hintPauseWhenDone }}</p>
-                            <p v-if="competitors.length && matches.length >= competitors.length * 5 && paused">{{ lang.hintFinishRemaining }}</p>
+                            <p v-if="competitors.length && matches.length >= competitors.length * 5">{{ lang.hintFinishRemaining }}</p>
                         </footer>
                         <h2>{{ lang.matchesCompleted }}</h2>
                         <table class="table table-condensed" id="matches-completed">

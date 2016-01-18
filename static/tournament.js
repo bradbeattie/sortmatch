@@ -182,7 +182,7 @@ Vue.filter('round', function(value, decimals) {
 
 var tournamentNames = Object.keys(EXAMPLES).map(function(name) { return name; });
 for (var key in localStorage) {
-    if (localStorage.hasOwnProperty(key) && tournamentNames.indexOf(key) === -1) {
+    if (key && localStorage.hasOwnProperty(key) && tournamentNames.indexOf(key) === -1) {
         tournamentNames.push(key);
     }
 }
@@ -194,13 +194,8 @@ var vue_data = {
     name: URI_KEY,
     banner: null,
     ranking: new glicko2.Glicko2(),
-    started: new Date(),
-    pageLoad: new Date(),
     competitors: [],
-    countdown: 0,
-    countdownActive: false,
     matches: [],
-    paused: false,
     RESULT_FAVORED: RESULT_FAVORED,
     RESULT_TIE: RESULT_TIE,
     RESULT_UNFAVORED: RESULT_UNFAVORED,
@@ -263,10 +258,8 @@ function jsonToObject(json) {
 
 function tournamentSave() {
     localStorage[URI_KEY] = objectToJSON({
-        started: vue.started,
         competitors: vue.competitors,
         matches: vue.matches,
-        paused: vue.paused,
         banner: vue.banner
     });
 }
@@ -277,167 +270,6 @@ if (localStorage[URI_KEY]) {
     }
 }
 
-
-var vue = new Vue({
-    el: '#vue-app',
-    data: vue_data,
-    watch: {
-        'paused': function (paused) {
-            tournamentSave();
-            if (!paused) {
-                planMatches();
-            }
-        }
-    },
-    methods: {
-        getPairable() {
-            return pairable = vue.competitors.filter(function(competitor) {
-                return !competitor.paused && competitor.matches.filter(function(match) {
-                    return match.finished === null;
-                }).length === 0;
-            });
-        },
-        setCountdown() {
-            var old_status = vue.countdownActive;
-            vue.countdownActive = (vue.getPairable().length / vue.competitors.length > 0.6);
-
-            // If countdownActive has been switched on, reset the countdown timer
-            if (!old_status && vue.countdownActive) {
-                var durations = vue.matches.map(function(match) {
-                    return (match.finished ? match.finished : new Date()) - match.start
-                });
-                if (durations.length) {
-                    var sum = durations.reduce(function(a, b) { return a + b; });
-                    var avg = sum / durations.length;
-                    var delay = 30 + Math.pow(avg / 60000, 0.5) * 60;
-                } else {
-                    var delay = 30;
-                }
-                vue.countdown = parseInt(delay);
-            }
-        },
-        matchResolve(match, result) {
-            match.result = result;
-            match.finished = new Date();
-            match.favored.matched = match.favored.matches.filter(function(match) {
-                return match.finished === null;
-            }).length > 0;
-            match.unfavored.matched = match.unfavored.matches.filter(function(match) {
-                return match.finished === null;
-            }).length > 0;
-            regenerateRatings();
-            if (vue.getPairable().length >= (vue.competitors.length - 1)) {
-                planMatches();
-            } else {
-                vue.setCountdown();
-                tournamentSave();
-            }
-        },
-        matchRevert(match) {
-            if (confirm(vue.lang.matchesRevertPrompt)) {
-                match.result = null;
-                match.finished = null;
-                regenerateRatings();
-            }
-        },
-        matchAdd() {
-            var name_left = $("#match-add-left").val();
-            var name_right = $("#match-add-right").val();
-            var considering = vue.competitors.filter(function(competitor) { return competitor.name == name_left; })[0];
-            var pairing = vue.competitors.filter(function(competitor) { return competitor.name == name_right; })[0];
-            makeMatch(considering, pairing);
-            tournamentSave();
-            $("#match-add").modal("hide");
-        },
-        matchDeleteAll() {
-            vue.competitors.forEach(function(competitor, index) {
-                competitor.matches = []
-                competitor.matched = false;
-            });
-            vue.matches = [];
-            planMatches();
-        },
-        tournamentAdd() {
-            var name = (prompt(vue.lang.tournamentTitlePrompt) || "").trim();
-            if (name) {
-                location.href = "/?" + encodeURIComponent(name);
-            }
-        },
-        tournamentExport() {
-            tournamentSave();
-            saveAs(
-                new Blob(
-                    [localStorage[URI_KEY]],
-                    {type: "application/json;charset=utf-8"}
-                ),
-                URI_KEY + " (" + (new Date()).toISOString().split(".")[0].replace(/[^0-9]/g, "-") + ").json"
-            );
-        },
-        tournamentDelete() {
-            if (confirm(vue.lang.tournamentDeleteConfirm)) {
-                delete localStorage[URI_KEY];
-                location.href = "/";
-            }
-        },
-        bannerChange() {
-            var url = (prompt(vue.lang.tournamentBannerPrompt) || "").trim();
-            if (!url || url.startsWith("http://") || url.startsWith("https://")) {
-                vue.banner = url;
-                tournamentSave();
-            } else {
-                alert(vue.lang.tournamentBannerWhine);
-            }
-        },
-        competitorAdd(name) {
-            if (!name) {
-                name = (prompt(vue.lang.competitorNamePrompt) || "").trim();
-            }
-            if (!name) {
-            } else if (vue.competitors.filter(function(competitor) { return competitor.name == name; }).length !== 0) {
-                alert(vue.lang.competitorNameWhine);
-            } else {
-                vue.competitors.push({
-                    name: name,
-                    initialRating: vue.ranking._default_rating,
-                    ranking: vue.ranking.makePlayer(vue.ranking._default_rating, vue.ranking._default_rd, vue.ranking._default_vol),
-                    matches: [],
-                    matched: false,
-                    paused: false
-                });
-                planMatches();
-                tournamentSave();
-            }
-        },
-        competitorAddMultiple() {
-            $("#competitor-add-multiple textarea").val().trim().split("\n").forEach(function(name, index) {
-                if (name) {
-                    vue.competitorAdd(name);
-                }
-            });
-            $("#competitor-add-multiple").modal("hide");
-        },
-        competitorPause(competitor) {
-            competitor.paused = !competitor.paused;
-            tournamentSave();
-        },
-        competitorInitialRatingChange(competitor) {
-            var initialRating = parseInt(prompt(vue.lang.competitorRatingPrompt, competitor.initialRating / 100) * 100) || competitor.initialRating;
-            competitor.initialRating = Math.max(500, Math.min(2000, initialRating));
-            regenerateRatings();
-            tournamentSave();
-        },
-        competitorNameChange(competitor) {
-            var name = (prompt(vue.lang.competitorNamePrompt) || "").trim();
-            if (!name) {
-            } else if (vue.competitors.filter(function(competitor) { return competitor.name == name; }).length !== 0) {
-                alert(vue.lang.competitorNameWhine);
-            } else {
-                competitor.name = name;
-                tournamentSave();
-            }
-        }
-    }
-});
 
 /* Using the initially provided ratings, follow https://github.com/mmai/glicko2js#when-to-update-rankings
  * and regenerate each player's new rating from the start with the results provided thus far. */
@@ -457,6 +289,7 @@ function regenerateRatings() {
         }
     });
     vue.ranking.updateRatings(matches);
+    tournamentSave();
 }
 
 
@@ -470,11 +303,6 @@ function suitability(competitor, considering) {
 
 
 function planMatches() {
-
-    // Just bail if we're paused
-    if (vue.paused) {
-        return;
-    }
 
     // Pair up available competitors
     var any_planned = false;
@@ -552,7 +380,6 @@ function planMatches() {
 
     if (any_planned) {
         tournamentSave();
-        vue.setCountdown();
     }
 }
 
@@ -578,20 +405,129 @@ function makeMatch(a, b) {
 }
 
 
-// Plan matches immediately upon page load
-regenerateRatings();
-planMatches();
-
-
-// Decrement the vue countdown every second (is there a better way to implement a vue.js-compatible timer?)
-setInterval(function() {
-    if (!vue.paused && vue.countdownActive) {
-        vue.countdown = Math.max(0, vue.countdown - 1);
-        if (vue.countdown < 1) {
-            planMatches();
+var vue = new Vue({
+    el: '#vue-app',
+    data: vue_data,
+    methods: {
+        planMatches,
+        matchResolve(match, result) {
+            match.result = result;
+            match.finished = new Date();
+            match.favored.matched = match.favored.matches.filter(function(match) {
+                return match.finished === null;
+            }).length > 0;
+            match.unfavored.matched = match.unfavored.matches.filter(function(match) {
+                return match.finished === null;
+            }).length > 0;
+            regenerateRatings();
+        },
+        matchRevert(match) {
+            if (confirm(vue.lang.matchesRevertPrompt)) {
+                match.result = null;
+                match.finished = null;
+                regenerateRatings();
+            }
+        },
+        matchAdd() {
+            var name_left = $("#match-add-left").val();
+            var name_right = $("#match-add-right").val();
+            var considering = vue.competitors.filter(function(competitor) { return competitor.name == name_left; })[0];
+            var pairing = vue.competitors.filter(function(competitor) { return competitor.name == name_right; })[0];
+            makeMatch(considering, pairing);
+            tournamentSave();
+            $("#match-add").modal("hide");
+        },
+        matchDeleteAll() {
+            vue.competitors.forEach(function(competitor, index) {
+                competitor.matches = []
+                competitor.matched = false;
+            });
+            vue.matches = [];
+        },
+        tournamentAdd() {
+            var name = (prompt(vue.lang.tournamentTitlePrompt) || "").trim();
+            if (name) {
+                location.href = "/?" + encodeURIComponent(name);
+            }
+        },
+        tournamentExport() {
+            tournamentSave();
+            saveAs(
+                new Blob(
+                    [localStorage[URI_KEY]],
+                    {type: "application/json;charset=utf-8"}
+                ),
+                URI_KEY + " (" + (new Date()).toISOString().split(".")[0].replace(/[^0-9]/g, "-") + ").json"
+            );
+        },
+        tournamentDelete() {
+            if (confirm(vue.lang.tournamentDeleteConfirm)) {
+                delete localStorage[URI_KEY];
+                location.href = "/";
+            }
+        },
+        bannerChange() {
+            var url = (prompt(vue.lang.tournamentBannerPrompt) || "").trim();
+            if (!url || url.startsWith("http://") || url.startsWith("https://")) {
+                vue.banner = url;
+                tournamentSave();
+            } else {
+                alert(vue.lang.tournamentBannerWhine);
+            }
+        },
+        competitorAdd(name) {
+            if (!name) {
+                name = (prompt(vue.lang.competitorNamePrompt) || "").trim();
+            }
+            if (!name) {
+            } else if (vue.competitors.filter(function(competitor) { return competitor.name == name; }).length !== 0) {
+                alert(vue.lang.competitorNameWhine);
+            } else {
+                vue.competitors.push({
+                    name: name,
+                    initialRating: vue.ranking._default_rating,
+                    ranking: vue.ranking.makePlayer(vue.ranking._default_rating, vue.ranking._default_rd, vue.ranking._default_vol),
+                    matches: [],
+                    matched: false,
+                    paused: false
+                });
+                tournamentSave();
+            }
+        },
+        competitorAddMultiple() {
+            $("#competitor-add-multiple textarea").val().trim().split("\n").forEach(function(name, index) {
+                if (name) {
+                    vue.competitorAdd(name);
+                }
+            });
+            $("#competitor-add-multiple").modal("hide");
+        },
+        competitorPause(competitor) {
+            competitor.paused = !competitor.paused;
+            tournamentSave();
+        },
+        competitorInitialRatingChange(competitor) {
+            var initialRating = parseInt(prompt(vue.lang.competitorRatingPrompt, competitor.initialRating / 100) * 100) || competitor.initialRating;
+            competitor.initialRating = Math.max(500, Math.min(2000, initialRating));
+            regenerateRatings();
+            tournamentSave();
+        },
+        competitorNameChange(competitor) {
+            var name = (prompt(vue.lang.competitorNamePrompt) || "").trim();
+            if (!name) {
+            } else if (vue.competitors.filter(function(competitor) { return competitor.name == name; }).length !== 0) {
+                alert(vue.lang.competitorNameWhine);
+            } else {
+                competitor.name = name;
+                tournamentSave();
+            }
         }
     }
-}, 1000);
+});
+
+
+// Plan matches immediately upon page load
+regenerateRatings();
 
 
 // If the tournament is named "Example Tournament", run the demo
