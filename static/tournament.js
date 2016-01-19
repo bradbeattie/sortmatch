@@ -298,7 +298,7 @@ function suitability(competitor, considering) {
     var matches_played_together = competitor.matches.filter(function(match) {
         return match.favored === considering || match.unfavored === considering;
     }).length;
-    return rating_difference * (matches_played_together + 1) + matches_played_together * 1000;  // Still not 100% on the best combination of these two variables
+    return rating_difference * (matches_played_together + 1) + matches_played_together * 300;  // Still not 100% on the best combination of these two variables
 }
 
 
@@ -624,6 +624,11 @@ function alphaTest() {
     }).forEach(function(match) {
         match.finished = new Date();
         match.result = (match.favored.name < match.unfavored.name) ? RESULT_FAVORED : RESULT_UNFAVORED;
+    });
+    vue.competitors.forEach(function(competitor) {
+        competitor.matched = competitor.matches.filter(function(match) {
+            return match.finished === null;
+        }).length > 0;
     });
     regenerateRatings();
     planMatches();
