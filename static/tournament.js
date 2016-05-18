@@ -554,7 +554,7 @@ $("#competitor-add").focus();
 
 
 // Prevent "#" links from changing the url hash
-$(document).on("click", "a[href=#]", function(event) {
+$(document).on("click", "a[href='#']", function(event) {
     event.preventDefault();
 });
 
@@ -586,7 +586,7 @@ $("#files").on("change", handleFileSelect);
 // Highlight other instances of this competitor's name when hovering
 $(document).on("mouseenter mouseleave", "[data-competitor]", function(x) {
     var competitors_table = $("#competitors");
-    competitors_table.find("tr").css("background", "");
+    competitors_table.find("td").css("background", "");
     $(".hover").removeClass("hover");
     if (x.type === "mouseenter") {
         var index = $(this).data("competitor");
@@ -608,7 +608,7 @@ $(document).on("mouseenter mouseleave", "[data-competitor]", function(x) {
             }
         });
         opponent_counts.forEach(function(counts, opponent_index) {
-            competitors_table.find("[data-competitor="+opponent_index+"]").closest("tr").css("background", "hsl("+parseInt(100 * counts[0] / (counts[0] + counts[1]))+", 56%, 89%)");
+            competitors_table.find("[data-competitor="+opponent_index+"]").closest("tr").find("td").css("background", "hsl("+parseInt(100 * counts[0] / (counts[0] + counts[1]))+", 56%, 89%)");
         });
         $("[data-competitor="+index+"]").closest("td, .label").addClass("hover").parent().addClass("hover");
     }
