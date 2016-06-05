@@ -30,6 +30,7 @@ tr.hover td.hover { box-shadow: inset 0 0 0 0.4em rgba(0,0,0,0.2); }
 #competitor-add-multiple p { text-align: left; }
 #competitor-add-multiple textarea { height: 20em; }
 #matches-completed .success { font-weight: bold; }
+#index { max-width: 500px; margin: auto; }
 
 /* Vertically center modals */
 .modal { text-align: center; padding: 0!important; }

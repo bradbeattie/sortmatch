@@ -2,7 +2,7 @@ var RESULT_FAVORED = 1;
 var RESULT_TIE = 0.5;
 var RESULT_UNFAVORED = 0;
 var RESULT_ABANDONED = null;
-var URI_KEY = decodeURIComponent(location.search.substring(1).split("&")[0]);
+var URI_KEY = (typeof URI_KEY == "undefined") ? decodeURIComponent(location.search.substring(1).split("&")[0]) : URI_KEY;
 var EXAMPLES = {
     "Smash Bros. Example": {
         "Andrea as Bayonetta": 1500,
